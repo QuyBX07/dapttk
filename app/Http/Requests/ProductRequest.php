@@ -7,22 +7,44 @@ use Illuminate\Foundation\Http\FormRequest;
 class ProductRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Xác định xem người dùng có quyền gửi yêu cầu này không.
      */
     public function authorize(): bool
     {
-        return false;
+        // Nếu bạn không cần kiểm tra quyền, có thể return true để cho phép tất cả người dùng
+        return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * Định nghĩa các quy tắc validation.
      */
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255',  // Tên sản phẩm là bắt buộc, dạng chuỗi và tối đa 255 ký tự
+            'category_id' => 'required|exists:categories,category_id',  // Category ID phải tồn tại trong bảng categories
+            'description' => 'nullable|string',  // Mô tả sản phẩm là tùy chọn và có thể là chuỗi
+            'unit' => 'required|string|max:1000',  // Đơn vị tính sản phẩm (cái, hộp,...)
+            'quantity' => 'required|integer|min:0',  // Số lượng sản phẩm phải là một số nguyên và không nhỏ hơn 0
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif',  // Ảnh sản phẩm nếu có phải là một file ảnh (jpg, jpeg, png, gif)
+            'price' => 'required|numeric|min:0',  // Giá sản phẩm phải là một số và không được âm
+        ];
+    }
+
+    /**
+     * Định nghĩa thông báo lỗi tùy chỉnh nếu có.
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required'        => 'Tên sản phẩm là bắt buộc.',
+            'category_id.required' => 'Danh mục là bắt buộc.',
+            'category_id.uuid'     => 'Danh mục không hợp lệ.',
+            'category_id.exists'   => 'Danh mục không tồn tại.',
+            'unit.required'        => 'Đơn vị tính là bắt buộc.',
+            'price.required'       => 'Giá sản phẩm là bắt buộc.',
+            'price.numeric'        => 'Giá phải là số.',
+
         ];
     }
 }

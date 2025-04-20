@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\FormRequests\ProductRequest;
-use App\DTOs\ProductDTO;
 use App\Http\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 use App\Http\DTOs\Requests\ProductCreateData;
-
+use App\Http\Requests\ProductRequest;
 class ProductController extends Controller
 {
     protected ProductService $productService;
@@ -44,7 +42,7 @@ class ProductController extends Controller
     /**
      * Create a new product.
      */
-    public function create(ProductRequest $request): JsonResponse
+    public function create(ProductRequest $request)
     {
         // Lấy dữ liệu đã được xác thực từ request
         $validatedData = $request->validated();
@@ -77,16 +75,19 @@ class ProductController extends Controller
         // Lấy dữ liệu đã được xác thực từ request
         $validatedData = $request->validated();
 
+        $productDTO = ProductCreateData::fromArray($validatedData);
+
+
         // Chuyển đổi dữ liệu thành ProductDTO
-        $productDTO = new ProductCreateData(
-            $validatedData['name'],
-            $validatedData['category_id'],
-            $validatedData['description'],
-            $validatedData['unit'],
-            $validatedData['quantity'],
-            $validatedData['image'],
-            (float) $validatedData['price'],
-        );
+        // $productDTO = new ProductCreateData(
+        //     $validatedData['name'],
+        //     $validatedData['category_id'],
+        //     $validatedData['description'],
+        //     $validatedData['unit'],
+        //     $validatedData['quantity'],
+        //     $validatedData['image'],
+        //     (float) $validatedData['price'],
+        // );
         
 
         // Gửi DTO vào service để xử lý cập nhật sản phẩm

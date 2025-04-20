@@ -4,11 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Customer extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'customer_id';
+    public $incrementing = false; // vì bạn dùng UUID
+    protected $keyType = 'string'; // UUID là kiểu string
     protected $fillable = [
         'customer_id', 'name', 'phone', 'email', 'address'
     ];
@@ -23,5 +27,13 @@ class Customer extends Model
     public function exports()
     {
         return $this->hasMany(Export::class, 'customer_id', 'customer_id');
+    }
+    protected static function booted(): void
+    {
+        static::creating(function ($customer) {
+            if (empty($customer->customer_id)) {
+                $customer->customer_id = (string) Str::uuid();
+            }
+        });
     }
 }
