@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ImportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,5 +20,19 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+//product routes
 Route::get('/products',[ProductController::class,'getAll']);
 Route::get('/product/{id}',[ProductController::class,'getDetail']);
+
+
+
+//customer routes
+Route::get('/customers',[CustomerController::class,'getAll']);
+Route::get('/customer/{id}',[CustomerController::class,'getDetail']);
+
+
+
+//import routes
+Route::get('/imports',[ImportController::class,'getAll']);
+Route::get('/import/{id}',[ImportController::class,'getDetail']);

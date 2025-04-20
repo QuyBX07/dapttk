@@ -4,24 +4,40 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+
 
 class Import extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'import_id';
+    public $incrementing = false; // Sử dụng UUID
+    protected $keyType = 'string'; // UUID là kiểu string
+
     protected $fillable = [
-        'import_id', 'customer_id', 'total_amount', 'import_date'
+        'import_id', 'supplier_id', 'total_amount', 'import_date'
     ];
 
     // Quan hệ với Customer (mỗi nhập khẩu thuộc về một khách hàng)
-    public function customer()
+    public function Supplier()
     {
-        return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'supplier_id');
     }
 
     // Quan hệ với ImportDetail (mỗi nhập khẩu có thể có nhiều chi tiết nhập hàng)
     public function importDetails()
     {
         return $this->hasMany(ImportDetail::class, 'import_id', 'import_id');
+    }
+
+
+    protected static function booted(): void
+    {
+        static::creating(function ($import) {
+            if (empty($import->import_id)) {
+                $import->import_id = (string) Str::uuid();
+            }
+        });
     }
 }

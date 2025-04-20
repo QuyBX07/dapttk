@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->uuid('importdetail_id')->primary(); // UUID làm khóa chính
             $table->uuid('product_id');   // Khóa ngoại trỏ đến bảng products
             $table->uuid('import_id');    // Khóa ngoại trỏ đến bảng imports
-            $table->integer('quality');   // Số lượng sản phẩm nhập
+            $table->integer('quantity');   // Số lượng sản phẩm nhập
             $table->decimal('price', 15, 2); // Giá nhập sản phẩm
 
             // Thiết lập quan hệ khóa ngoại
