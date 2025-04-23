@@ -3,7 +3,9 @@ namespace App\Http\Repositories\Eloquent;
 use App\Http\Repositories\Interfaces\BaseRepositoryInterface;
 use App\Models\Product;
 use Illuminate\Support\Collection;
-class ProductRepository implements BaseRepositoryInterface
+use App\Http\Repositories\Interfaces\SearchRepositoryInterface;
+
+class ProductRepository implements BaseRepositoryInterface, SearchRepositoryInterface
 {
     public function findAll()
     {
@@ -29,4 +31,17 @@ class ProductRepository implements BaseRepositoryInterface
     {
         return Product::destroy($id);
     }
+
+    public function search(string $query)
+    {
+        return Product::with('category')
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%")
+                  ->orWhereHas('category', function ($sub) use ($query) {
+                      $sub->where('name', 'LIKE', "%{$query}%");
+                  });
+            })
+            ->paginate(2);
+    }
+    
 }

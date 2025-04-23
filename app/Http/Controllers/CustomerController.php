@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CustomerRequest;
 use App\Http\Services\CustomerService;
 use App\Http\DTOs\Requests\CustomerCreateData;
+use App\Http\Requests\SearchRequest;
 use Illuminate\Http\JsonResponse;
 
 class CustomerController extends Controller
@@ -84,6 +85,21 @@ class CustomerController extends Controller
         return response()->json([
             'success' => $deleted,
             'message' => $deleted ? 'Xóa khách hàng thành công.' : 'Không thể xóa khách hàng.'
+        ]);
+    }
+
+
+    /**
+     * Search customers by query.
+     */
+    public function search(SearchRequest $request): JsonResponse
+    {
+        $query = $request->input('query');
+        $customers = $this->customerService->search($query);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $customers,
         ]);
     }
 }

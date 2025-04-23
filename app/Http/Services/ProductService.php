@@ -38,4 +38,10 @@ class ProductService
     {
         return $this->productRepo->find($id);
     }
+
+    // search
+    public function search(string $quesry)
+    {
+        return $this->productRepo->search($quesry);
+    }
 }

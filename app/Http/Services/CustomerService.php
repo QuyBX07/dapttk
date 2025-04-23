@@ -37,5 +37,11 @@ class CustomerService
     {
         return $this->customerRepo->find($id);
     }
+
+    // search
+    public function search(string $query)
+    {
+        return $this->customerRepo->search($query);
+    }
 }
 
