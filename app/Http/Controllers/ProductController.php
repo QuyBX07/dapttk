@@ -6,6 +6,8 @@ use App\Http\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 use App\Http\DTOs\Requests\ProductCreateData;
 use App\Http\Requests\ProductRequest;
+use App\Http\Requests\SearchRequest;
+
 class ProductController extends Controller
 {
     protected ProductService $productService;
@@ -110,4 +112,15 @@ class ProductController extends Controller
             'message' => 'Product deleted successfully.'
         ]);
     }
+
+    public function search(SearchRequest $request): JsonResponse
+{
+    $query = $request->input('query');
+    $products = $this->productService->search($query);
+
+    return response()->json([
+        'success' => true,
+        'data' => $products
+    ]);
+}
 }

@@ -36,3 +36,7 @@ Route::get('/customer/{id}',[CustomerController::class,'getDetail']);
 //import routes
 Route::get('/imports',[ImportController::class,'getAll']);
 Route::get('/import/{id}',[ImportController::class,'getDetail']);
+
+
+// serach routes
+// Route::post('/search/products',[ProductController::class,'search']);
