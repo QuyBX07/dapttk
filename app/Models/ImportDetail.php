@@ -16,12 +16,12 @@ class ImportDetail extends Model
     // Quan hệ với Product (mỗi chi tiết nhập hàng có một sản phẩm)
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id', 'id');
+        return $this->belongsTo(Product::class, 'product_id', 'product_id');
     }
 
     // Quan hệ với Import (mỗi chi tiết nhập hàng thuộc về một nhập khẩu)
     public function import()
     {
-        return $this->belongsTo(Import::class, 'import_id', 'id');
+        return $this->belongsTo(Import::class, 'import_id', 'product_id');
     }
 }
