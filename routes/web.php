@@ -42,8 +42,12 @@ Route::post('/customers/create', [CustomerController::class, 'create']);
 
 //import routes
 Route::get('/imports',[ImportController::class,'getAll']);
+Route::get('/imports/p/p',[ImportController::class,'postman']);
+Route::delete('/imports/delete/{id}', [ImportController::class, 'delete']);
+
 Route::get('/imports/{id}',[ImportController::class,'getDetail']);
 Route::post('/imports/create', [ImportController::class, 'create']);
+
 
 
 // serach routes

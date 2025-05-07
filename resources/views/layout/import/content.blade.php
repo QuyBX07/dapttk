@@ -35,38 +35,42 @@
                                     <thead>
                                         <tr>
                                             <th>Import ID</th>
-                                            <th>Supplier ID</th>
+                                            <th>Supplier</th>
                                             <th>Total Amount</th>
-                                            <th>Import Date</th>
+                                            <th>Note</th>
                                             <th>Created At</th>
                                             <th>Updated At</th>
+                                            <th>Create by</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($imports as $import)
-                                            <tr class="import-row" data-id="{{ $import->import_id }}">
+                                            <tr class="import-row" data-id="{{ $import['import_id'] }}">
                                                 <td
                                                     style="max-width: 15%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
-                                                    {{ $import->import_id }}</td>
+                                                    {{ $import['import_id'] }}</td>
                                                 <td
                                                     style="max-width: 20%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
-                                                    {{ $import->supplier_id }}</td>
+                                                    {{ $import['supplier']['name'] }}</td>
                                                 <td
                                                     style="max-width: 15%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
-                                                    {{ number_format($import->total_amount, 2) }}</td>
+                                                    {{ number_format($import['total_amount'], 2) }}</td>
                                                 <td
                                                     style="max-width: 20%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
-                                                    {{ \Carbon\Carbon::parse($import->import_date)->format('Y-m-d') }}
+                                                    {{ $import['note'] }}</td>
+                                                <td
+                                                    style="max-width: 20%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
+                                                    {{ \Carbon\Carbon::parse($import['created_at'])->format('Y-m-d H:i:s') }}
                                                 </td>
                                                 <td
                                                     style="max-width: 20%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
-                                                    {{ \Carbon\Carbon::parse($import->created_at)->format('Y-m-d H:i:s') }}
+                                                    {{ \Carbon\Carbon::parse($import['updated_at'])->format('Y-m-d H:i:s') }}
                                                 </td>
                                                 <td
                                                     style="max-width: 20%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
-                                                    {{ \Carbon\Carbon::parse($import->updated_at)->format('Y-m-d H:i:s') }}
-                                                </td>
+                                                    {{ $import['account']['name'] }}</td>
+
 
                                                 <td>
                                                     <form action="{{ url('/imports/delete/' . $import->import_id) }}"
@@ -74,9 +78,9 @@
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger"
-                                                            onclick="return confirm('Bạn có chắc chắn muốn xóa nhập hàng này không?')">
-                                                            Delete
-                                                        </button>
+                                                        onclick="event.stopPropagation(); return confirm('Bạn có chắc chắn muốn xóa nhập hàng này không?')">
+                                                        Delete
+                                                    </button>
                                                     </form>
                                                 </td>
                                             </tr>
@@ -116,13 +120,28 @@
                                         {{-- @foreach ($suppliers as $supplier)
                                             <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                                         @endforeach --}}
-                                        <option value="3e576caa-c425-48fa-982b-35b81f0e6cfd">Baumbach, Beahan and Altenwerth
+                                        <option value="0387d689-fca6-4e88-b512-32bbd9231cca">Spencer Ltd
                                         </option>
 
                                     </select>
                                 </div>
 
+                                <!-- Người lập phiếu -->
+                                <div class="form-group">
+                                    <label>Người tạo</label>
+                                    <!-- Hiển thị tên (readonly, không gửi về server) -->
+                                    <input type="text" class="form-control" value="Nam" readonly>
 
+                                    <!-- Trường ẩn để gửi account_id -->
+                                    <input type="hidden" name="account_id" value="0990d54e-6cf7-47ca-af95-29237e815e78">
+                                </div>
+
+
+                                <!-- Ghi chú -->
+                                <div class="form-group">
+                                    <label for="note">Note</label>
+                                    <textarea name="note" id="note" rows="3" class="form-control" placeholder="Enter note (optional)"></textarea>
+                                </div>
 
                                 <hr>
                                 <h5>Products</h5>
@@ -200,6 +219,8 @@
                         <div class="modal-body">
                             <p><strong>Import ID:</strong> <span id="detail-import-id"></span></p>
                             <p><strong>Supplier:</strong> <span id="detail-supplier"></span></p>
+                            <p><strong>Created by:</strong> <span id="detail-account"></span></p>
+                            <p><strong>Note:</strong> <span id="detail-note"></span></p>
                             <p><strong>Total Amount:</strong> <span id="detail-total"></span></p>
                             <p><strong>Import Date:</strong> <span id="detail-date"></span></p>
                             <hr>
@@ -208,7 +229,7 @@
                                 <thead>
                                     <tr>
                                         <th>Product</th>
-                                        <th>Qty</th>
+                                        <th>Qantity</th>
                                         <th>Price</th>
                                         <th>Subtotal</th>
                                     </tr>
@@ -274,12 +295,12 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            $('#importForm').submit(function(event) {
-                event.preventDefault();
-                var formData = $(this).serialize(); // Lấy toàn bộ dữ liệu form
-                console.log(formData); // Log dữ liệu ra console
-                // Sau khi log, gửi dữ liệu đến server
-            });
+            // $('#importForm').submit(function(event) {
+            //     event.preventDefault();
+            //     var formData = $(this).serialize(); // Lấy toàn bộ dữ liệu form
+            //     console.log(formData); // Log dữ liệu ra console
+            //     // Sau khi log, gửi dữ liệu đến server
+            // });
 
             $('#modal-import').on('show.bs.modal', function(event) {
                 const modal = $(this);
@@ -375,25 +396,27 @@
             // Hiển thị chi tiết nhập hàng khi nhấn vào nút "View Detail"
             $('.import-row').on('click', function() {
                 const importId = $(this).data('id');
-                $.get(`/imports/${importId}`, function(data) {
-                    console.log("DATA RECEIVED:", data);
 
+                $.get(`/imports/${importId}`, function(data) {
                     $('#detail-import-id').text(data.import_id);
                     $('#detail-supplier').text(data.supplier.name);
-                    $('#detail-total').text(data.total_amount.toFixed(2));
-                    $('#detail-date').text(data.import_date);
+                    $('#detail-total').text(parseFloat(data.total_amount).toFixed(2));
+                    $('#detail-date').text(new Date(data.created_at)
+                .toLocaleString()); // Hiển thị thời gian tạo
+                    $('#detail-note').text(data.note ?? 'Không có ghi chú');
+                    $('#detail-account').text(data.account.name); // Người tạo
 
                     // Clear sản phẩm cũ
                     $('#detail-products').empty();
 
                     // Thêm từng sản phẩm vào bảng
-                    data.details.forEach(function(detail) {
+                    data.import_details.forEach(function(detail) {
                         $('#detail-products').append(`
                 <tr>
                     <td>${detail.product.name}</td>
                     <td>${detail.quantity}</td>
                     <td>${detail.price}</td>
-                    <td>${(detail.quantity * detail.price).toFixed(2)}</td>
+                    <td>${(detail.quantity * parseFloat(detail.price)).toFixed(2)}</td>
                 </tr>
             `);
                     });
@@ -401,6 +424,7 @@
                     $('#modal-import-detail').modal('show');
                 });
             });
+
 
         });
     </script>
