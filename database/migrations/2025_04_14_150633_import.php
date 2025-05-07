@@ -17,7 +17,7 @@ return new class extends Migration {
                   ->on('suppliers')
                   ->onDelete('cascade'); // Khi xóa khách hàng thì xóa luôn nhập khẩu liên quan
 
-            $table->timestamps(); // created_at & updated_at
+                $table->timestamps(); // created_at & updated_at
         });
     }
 
