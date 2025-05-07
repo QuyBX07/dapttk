@@ -36,6 +36,7 @@ Route::delete('/customers/delete/{id}', [CustomerController::class, 'delete']);
 //import routes
 Route::post('/imports/create', [ImportController::class, 'create']);
 Route::delete('/imports/delete/{id}', [ImportController::class, 'delete']);
+Route::get('/imports', [ImportController::class, 'getAll']);
 
 
 // search routes

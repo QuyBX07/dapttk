@@ -25,11 +25,11 @@ class ImportRequest extends FormRequest
         return [
             'supplier_id'  => 'required|uuid|exists:suppliers,supplier_id',
             'total_amount' => 'required|numeric|min:0',
-            'import_date'  => 'required|date',
             'details'       => 'required|array',  // Kiểm tra dữ liệu chi tiết
             'details.*.product_id' => 'required|uuid|exists:products,product_id', // Các chi tiết phải chứa product_id hợp lệ
             'details.*.quantity'    => 'required|integer|min:1', // Kiểm tra số lượng
             'details.*.price'      => 'required|numeric|min:0', // Kiểm tra giá nhập
+            
         ];
     }
 
@@ -79,7 +79,6 @@ class ImportRequest extends FormRequest
         return new ImportCreateData(
             supplier_id: $data['supplier_id'],
             total_amount: $data['total_amount'],
-            import_date: $data['import_date'],
             details: $details
         );
     }

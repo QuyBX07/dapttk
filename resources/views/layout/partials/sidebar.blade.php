@@ -39,15 +39,15 @@
             <a href="#" class="nav-link active">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
-                Dashboard
+                Quản lý sản phẩm
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="./index.html" class="nav-link active">
+                <a href="/products" class="nav-link active">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Tổng số sản phẩm trong khokho</p>
+                  <p>Tổng số sản phẩm trong kho</p>
                 </a>
               </li>
               <li class="nav-item">
@@ -57,24 +57,24 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./index3.html" class="nav-link">
+                <a href="/imports" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Sản phẩm suất</p>
+                  <p>Quản lý nhập hàng</p>
                 </a>
               </li>
             </ul>
           </li>
           
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="/customers" class="nav-link">
               <i class="nav-icon far fa-circle text-warning"></i>
-              <p>Warning</p>
+              <p>Quản lý khách hàng</p>
             </a>
           </li>
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon far fa-circle text-info"></i>
-              <p>Informational</p>
+              <p>Quản lý nhà cung cấp</p>
             </a>
           </li>
         </ul>

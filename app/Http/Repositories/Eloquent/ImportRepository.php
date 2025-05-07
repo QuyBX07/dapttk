@@ -4,14 +4,18 @@ use App\Http\Repositories\Interfaces\BaseRepositoryInterface;
 use App\Http\Repositories\Interfaces\ImportRepositoryInterface;
 use App\Models\Import;
 use App\Http\DTOs\Requests\ImportCreateData;
-use Illuminate\Support\Collection;
+use App\Http\Repositories\Interfaces\SearchRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class ImportRepository implements BaseRepositoryInterface, ImportRepositoryInterface
+class ImportRepository implements BaseRepositoryInterface, ImportRepositoryInterface, SearchRepositoryInterface
 {
     public function findAll()
     {
-        return Import::paginate(2);
+        return Import::with('account:id,name')
+        
+        
+         ->paginate(2);
+        ;
     }
 
     public function find(string $id)
@@ -55,6 +59,12 @@ class ImportRepository implements BaseRepositoryInterface, ImportRepositoryInter
     
             return $import;
         });
+    }
+    
+
+    public function search(string $query)
+    {
+       
     }
     
    

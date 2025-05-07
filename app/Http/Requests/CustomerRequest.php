@@ -24,7 +24,7 @@ class CustomerRequest extends FormRequest
         return [
             'customer_id' => 'nullable|uuid',
             'name'        => 'required|string|max:255',
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => 'nullable|regex:/^\+?[0-9]{8,20}$/',
             'email'       => $this->isMethod('post') // Nếu là POST (create)
                 ? 'nullable|email|max:255|unique:customers,email'
                 : 'required|email|max:255', // Nếu là PUT (update), chỉ kiểm tra định dạng và không cho null
@@ -38,6 +38,7 @@ class CustomerRequest extends FormRequest
             'name.required' => 'Tên khách hàng là bắt buộc.',
             'email.email'   => 'Email không đúng định dạng.',
             'email.unique'  => 'Email đã tồn tại.',
+            'phone.regex' => 'Số điện thoại không hợp lệ. Chỉ cho phép số và tối đa 20 ký tự.',
         ];
     }
 }

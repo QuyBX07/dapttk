@@ -4,6 +4,8 @@ namespace App\Http\Services;
 
 use App\Http\Repositories\Eloquent\ImportRepository;
 use App\Http\DTOs\Requests\ImportCreateData;
+use App\Http\DTOs\Responses\ImportResponse;
+use App\Http\Resources\ImportResource;
 
 class ImportService
 {
@@ -16,7 +18,11 @@ class ImportService
 
     public function getAll()
     {
-        return $this->importRepo->findAll();
+        // $imports = $this->importRepo->findAll(); // Lấy tất cả dữ liệu từ repository
+        // return ImportResource::collection($imports); // Trả về dữ liệu phân trang qua Resource
+        // return $this->importRepo->findAll(); // Lấy tất cả dữ liệu từ repository
+        $imports = $this->importRepo->findAll(); // Trả về một đối tượng LengthAwarePaginator
+        return ImportResource::collection($imports); // Laravel tự giữ phân trang
     }
 
     public function getDetail(string $id)

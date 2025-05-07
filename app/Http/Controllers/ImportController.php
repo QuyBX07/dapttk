@@ -6,32 +6,48 @@ use App\Http\Requests\ImportRequest;
 use App\Http\Services\ImportService;
 use App\Http\DTOs\Requests\ImportCreateData;
 use Illuminate\Http\JsonResponse;
+use App\Http\Services\ProductService;
 
 class ImportController extends Controller
 {
     protected ImportService $importService;
+    protected ProductService $productService;
 
-    public function __construct(ImportService $importService)
+    public function __construct(ImportService $importService, ProductService $productService)
     {
+        $this->productService = $productService;
+    
         $this->importService = $importService;
     }
 
-    /**
-     * Get all imports.
-     */
-    public function getAll(): JsonResponse
+// get all
+    public function getAll()
     {
         $imports = $this->importService->getAll();
+        $products = $this->productService->getAll();
 
-        return response()->json([
-            'success' => true,
-            'data'    => $imports,
-        ]);
+        // $importData = $imports->response()->getData(true);
+
+        // return response()->json([
+        //     'success' => true,
+        //     'imports' => $importData['data'],
+        //     'meta' => $importData['meta'],
+        //     'links' => $importData['links'],
+           
+        // ]);
+        // return view('layout.import.content', [
+        //     'imports' => $imports,
+        //     'products' => $products
+        // ]);
+        
+        // return view('layout.import.content', [
+        //     'imports' => $imports,
+        //     'products' => $products
+        // ]);
+        return $imports;
     }
 
-    /**
-     * Get import detail by ID.
-     */
+// get detail
     public function getDetail(string $id): JsonResponse
     {
         $import = $this->importService->getDetail($id);
@@ -42,29 +58,24 @@ class ImportController extends Controller
         ]);
     }
 
-    /**
-     * Create new import.
-     */
-    public function create(ImportRequest $request): JsonResponse
+//create
+    public function create(ImportRequest $request)
     {
+
         $validatedData = $request->validated();
         $dto = ImportCreateData::fromArray($validatedData);
 
         $import = $this->importService->create($dto);
 
-        return response()->json([
-            'success' => true,
-            'data'    => $import,
-        ], 201);
+        // return response()->json([
+        //     'success' => true,
+        //     'data'    => $import,
+        // ], 201);
+
+        return redirect()->back()->with('success', 'Thêm phiếu nhập thành công.');
     }
 
-    /**
-     * Update import by ID.
-     */
-
-    /**
-     * Delete import by ID.
-     */
+// delete
     public function delete(string $id): JsonResponse
     {
         $deleted = $this->importService->delete($id);
