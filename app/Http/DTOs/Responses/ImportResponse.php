@@ -9,7 +9,10 @@ class ImportResponse
     {
         return [
             'import_id'    => $this->import->import_id,
-            'supplier_id'  => $this->import->supplier_id,
+            'supplier'  => [
+                'supplier_id'   => $this->import->supplier->supplier_id,
+                'name' => $this->import->supplier->name,
+            ],
             'total_amount' => $this->import->total_amount,
             'note'         => $this->import->note,
             'created_at'   => $this->import->created_at,

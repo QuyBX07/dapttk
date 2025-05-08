@@ -16,7 +16,7 @@ class Import extends Model
     protected $keyType = 'string'; // UUID là kiểu string
 
     protected $fillable = [
-        'import_id', 'supplier_id', 'total_amount', 'import_date'
+        'import_id', 'supplier_id', 'total_amount','account_id','is_delete','note', 'import_date'
     ];
 
     // Quan hệ với supplier (mỗi nhập khẩu thuộc về một nhà cung cấp)

@@ -40,22 +40,19 @@ class ImportController extends Controller
         //     'products' => $products
         // ]);
         
-        // return view('layout.import.content', [
-        //     'imports' => $imports,
-        //     'products' => $products
-        // ]);
-        return $imports;
+        return view('layout.import.content', [
+            'imports' => $imports,
+            'products' => $products
+        ]);
+        // return $imports;
     }
 
 // get detail
-    public function getDetail(string $id): JsonResponse
+    public function getDetail(string $id)
     {
         $import = $this->importService->getDetail($id);
 
-        return response()->json([
-            'success' => true,
-            'data'    => $import,
-        ]);
+        return $import;
     }
 
 //create
@@ -64,7 +61,6 @@ class ImportController extends Controller
 
         $validatedData = $request->validated();
         $dto = ImportCreateData::fromArray($validatedData);
-
         $import = $this->importService->create($dto);
 
         // return response()->json([
@@ -76,13 +72,23 @@ class ImportController extends Controller
     }
 
 // delete
-    public function delete(string $id): JsonResponse
+    public function delete(string $id)
     {
         $deleted = $this->importService->delete($id);
 
-        return response()->json([
-            'success' => $deleted,
-            'message' => $deleted ? 'Xóa phiếu nhập thành công.' : 'Không thể xóa phiếu nhập.'
-        ]);
+        // return response()->json([
+        //     'success' => $deleted,
+        //     'message' => $deleted ? 'Xóa phiếu nhập thành công.' : 'Không thể xóa phiếu nhập.'
+        // ]);
+        return redirect()->back()->with('success', 'Xóa phiếu nhập thành công.');
+    }
+
+
+    //post man 
+    public function postman()
+    {
+        $imports = $this->importService->getAll();
+        $products = $this->productService->getAll();
+        return $imports;
     }
 }

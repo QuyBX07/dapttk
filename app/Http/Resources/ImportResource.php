@@ -16,7 +16,10 @@ class ImportResource extends JsonResource
     {
         return [
             'import_id' => $this->import_id,
-            'supplier_id' => $this->supplier_id,
+            'supplier'  => [
+                'supplier_id' => $this->supplier->supplier_id,
+                'name' => $this->supplier->name,
+            ],
             'total_amount' => $this->total_amount,
             'note' => $this->note,
             'created_at' => $this->created_at,

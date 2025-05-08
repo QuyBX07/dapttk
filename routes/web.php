@@ -50,6 +50,9 @@ Route::post('/customers/create', [CustomerController::class, 'create']);
 
 //import routes
 Route::get('/imports',[ImportController::class,'getAll']);
+Route::get('/imports/p/p',[ImportController::class,'postman']);
+Route::delete('/imports/delete/{id}', [ImportController::class, 'delete']);
+
 Route::get('/imports/{id}',[ImportController::class,'getDetail']);
 Route::post('/imports/create', [ImportController::class, 'create']);
 
@@ -58,6 +61,7 @@ Route::get('/categories', [CategoryController::class, 'index'])->name('categorie
 Route::post('/categories/create', [CategoryController::class, 'store'])->name('categories.store');
 Route::put('/categories/update/{category_id}', [CategoryController::class, 'update']);
 Route::delete('/categories/delete/{id}', [CategoryController::class, 'destroy'])->name('categories.delete');
+
 
 
 // serach routes
