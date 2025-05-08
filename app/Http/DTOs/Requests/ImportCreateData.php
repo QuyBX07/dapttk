@@ -13,7 +13,6 @@ class ImportCreateData
     public function __construct(
         public readonly string $supplier_id,
         public readonly float $total_amount,
-        public readonly string $import_date,
         public readonly array $details,
     ) {}
 
@@ -27,7 +26,6 @@ class ImportCreateData
         return new self(
             supplier_id: $data['supplier_id'],
             total_amount: $data['total_amount'],
-            import_date: $data['import_date'],
             details: $details,
         );
     }
@@ -38,7 +36,6 @@ class ImportCreateData
             'import' => [
                 'supplier_id'  => $this->supplier_id,
                 'total_amount' => $this->total_amount,
-                'import_date'  => $this->import_date,
             ],
             'details' => array_map(fn($d) => $d->toArray(), $this->details),
         ];

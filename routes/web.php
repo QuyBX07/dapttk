@@ -4,6 +4,8 @@ use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +21,12 @@ use App\Http\Controllers\ImportController;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/login', [\App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login.submit');
+Route::get('/register', [\App\Http\Controllers\AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register'])->name('register.submit');
+Route::get('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
 
 //product routes
@@ -44,6 +52,12 @@ Route::post('/customers/create', [CustomerController::class, 'create']);
 Route::get('/imports',[ImportController::class,'getAll']);
 Route::get('/imports/{id}',[ImportController::class,'getDetail']);
 Route::post('/imports/create', [ImportController::class, 'create']);
+
+//category routes
+Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::post('/categories/create', [CategoryController::class, 'store'])->name('categories.store');
+Route::put('/categories/update/{category_id}', [CategoryController::class, 'update']);
+Route::delete('/categories/delete/{id}', [CategoryController::class, 'destroy'])->name('categories.delete');
 
 
 // serach routes

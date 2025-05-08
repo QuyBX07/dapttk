@@ -9,7 +9,9 @@ class ProductRepository implements BaseRepositoryInterface, SearchRepositoryInte
 {
     public function findAll()
     {
-        return Product::with('category')->paginate(2);
+        return Product::with('category')
+        ->orderBy('updated_at', 'desc')
+        ->paginate(20);
     }
 
     public function find(string $id)
@@ -41,7 +43,8 @@ class ProductRepository implements BaseRepositoryInterface, SearchRepositoryInte
                       $sub->where('name', 'LIKE', "%{$query}%");
                   });
             })
-            ->paginate(2);
+            ->orderBy('updated_at', 'desc')
+            ->paginate(20);
     }
     
 }
