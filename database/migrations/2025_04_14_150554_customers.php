@@ -8,12 +8,13 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('customers', function (Blueprint $table) {
-            $table->uuid('customer_id')->primary(); // UUID làm khóa chính
+            $table->uuid('customer_id')->primary(); 
             $table->string('name');
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('address')->nullable();
-            $table->timestamps(); // created_at & updated_at
+            $table->boolean('is_deleted')->default(false); 
+            $table->timestamps(); 
         });
     }
 

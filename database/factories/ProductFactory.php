@@ -26,6 +26,7 @@ class ProductFactory extends Factory
             'quantity' => $this->faker->numberBetween(0, 100), // Số lượng ngẫu nhiên
             'image' => $this->faker->imageUrl(640, 480, 'products', true), // URL ảnh ngẫu nhiên
             'price' => $this->faker->randomFloat(2, 1, 1000), // Giá ngẫu nhiên
+            'is_deleted' => false, // Không bị xóa
         ];
     }
 }

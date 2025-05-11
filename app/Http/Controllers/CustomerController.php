@@ -17,9 +17,7 @@ class CustomerController extends Controller
         $this->customerService = $customerService;
     }
 
-    /**
-     * Get all customers.
-     */
+// lấy danh sách khách hàng
     public function getAll()
     {
         $customers = $this->customerService->getAll();
@@ -34,9 +32,7 @@ class CustomerController extends Controller
         // ]);
     }
 
-    /**
-     * Get customer details by ID.
-     */
+// lấy chi tiết khách hàng
     public function getDetail(string $id): JsonResponse
     {
         $customer = $this->customerService->getDetail($id);

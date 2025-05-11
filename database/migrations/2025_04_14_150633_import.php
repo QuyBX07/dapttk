@@ -8,22 +8,22 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('imports', function (Blueprint $table) {
-            $table->uuid('import_id')->primary(); // UUID làm khóa chính
-            $table->uuid('supplier_id');   // Khóa ngoại trỏ đến bảng customers
+            $table->uuid('import_id')->primary(); 
+            $table->uuid('supplier_id');  
             $table->decimal('total_amount', 15, 2); // Tổng tiền, độ chính xác cao
-            $table->boolean('is_delete')->default(0); // Trạng thái nhập khẩu (1: đã xóaxóa, 0: chưa xóa)
-            $table->string('note')->nullable(); // Ghi chú
-            $table->uuid('account_id'); // Người tạo phiếu nhập
+            $table->boolean('is_delete')->default(false); 
+            $table->string('note')->nullable(); // Ghi chú nếu xóa mềm
+            $table->uuid('account_id'); 
             $table->foreign('account_id')
-                ->references('id')  // Khóa chính trong bảng accounts
+                ->references('id') 
                 ->on('accounts')
-                ->onDelete('cascade'); // Khi xóa tài khoản thì xóa luôn nhập khẩu liên quan
+                ->onDelete('cascade'); 
             $table->foreign('supplier_id')
                 ->references('supplier_id')
                 ->on('suppliers')
-                ->onDelete('cascade'); // Khi xóa khách hàng thì xóa luôn nhập khẩu liên quan
+                ->onDelete('cascade');
 
-            $table->timestamps(); // created_at & updated_at
+            $table->timestamps(); 
         });
     }
 

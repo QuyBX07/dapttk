@@ -2,18 +2,16 @@
 
 namespace App\Http\Services;
 
-use App\Http\Repositories\Eloquent\ImportRepository;
+use App\Http\Repositories\Interfaces\ImportRepoInterface;
 use App\Http\DTOs\Requests\ImportCreateData;
 use App\Http\DTOs\Responses\ImportResponse;
 use App\Http\Resources\ImportResource;
 
 class ImportService
 {
-    protected ImportRepository $importRepo;
 
-    public function __construct(ImportRepository $importRepo)
+    public function __construct(protected ImportRepoInterface $importRepo)
     {
-        $this->importRepo = $importRepo;
     }
 
     public function getAll()
@@ -37,7 +35,7 @@ class ImportService
         // $details = $dto->details; // Dữ liệu chi tiết đã được phân tách trong DTO
     
         // Gọi phương thức trong repository để tạo phiếu nhập với các chi tiết
-        return $this->importRepo->createWithDetails($dto);
+        return $this->importRepo->create($dto->toArray());
     }
     
     

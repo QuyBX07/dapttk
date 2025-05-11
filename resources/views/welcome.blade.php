@@ -53,7 +53,10 @@
         {{-- @include('layout.partials.content') --}}
         <!-- /.content-header -->
 
-        < @yield('content') @include('layout.partials.footer') <!-- Control Sidebar -->
+        < @yield('content') 
+        
+        
+        @include('layout.partials.footer') <!-- Control Sidebar -->
             <aside class="control-sidebar control-sidebar-dark">
                 <!-- Control sidebar content goes here -->
             </aside>
@@ -92,7 +95,6 @@
     <!-- AdminLTE App -->
     <script src="/theme/admin/dist/js/adminlte.js"></script>
     <!-- AdminLTE for demo purposes -->
-    <script src="/theme/admin/dist/js/demo.js"></script>
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="/theme/admin/dist/js/pages/dashboard.js"></script>
     <!-- jQuery -->

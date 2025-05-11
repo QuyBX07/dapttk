@@ -1,11 +1,8 @@
 <?php
 namespace App\Http\Repositories\Eloquent;
-use App\Http\Repositories\Interfaces\BaseRepositoryInterface;
 use App\Models\Product;
-use Illuminate\Support\Collection;
-use App\Http\Repositories\Interfaces\SearchRepositoryInterface;
-
-class ProductRepository implements BaseRepositoryInterface, SearchRepositoryInterface
+use App\Http\Repositories\Interfaces\ProductRepoInterface;
+class ProductRepository implements ProductRepoInterface
 {
     public function findAll()
     {
