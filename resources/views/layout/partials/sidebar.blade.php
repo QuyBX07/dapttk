@@ -51,21 +51,15 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./index2.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Sản phẩm nhập</p>
-                </a>
-              </li>
-              <li class="nav-item">
                 <a href="/imports" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Quản lý nhập hàng</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./index3.html" class="nav-link">
+                <a href="/exports" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Sản phẩm suất</p>
+                  <p>Quản lý suất hàng</p>
                 </a>
               </li>
             </ul>

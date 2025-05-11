@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ExportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +62,13 @@ Route::get('/categories', [CategoryController::class, 'index'])->name('categorie
 Route::post('/categories/create', [CategoryController::class, 'store'])->name('categories.store');
 Route::put('/categories/update/{category_id}', [CategoryController::class, 'update']);
 Route::delete('/categories/delete/{id}', [CategoryController::class, 'destroy'])->name('categories.delete');
+
+// Routes for managing exports
+Route::get('/exports', [ExportController::class, 'index']); // Lấy danh sách xuất hàng
+Route::post('/exports/create', [ExportController::class, 'store']);
+Route::get('/exports/{id}', [ExportController::class, 'show']); // AJAX detail
+Route::put('/exports/update/{id}', [ExportController::class, 'update']);
+Route::delete('/exports/delete/{id}', [ExportController::class, 'destroy']);
 
 
 
