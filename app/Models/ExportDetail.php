@@ -8,11 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class ExportDetail extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
-        'exportdetail_id', 'product_id', 'export_id', 'quantity', 'price'
-    ];
-
+protected $fillable = [
+    'exportdetail_id',
+    'export_id',
+    'product_id',
+    'quantity',
+    'price',
+];
     // Quan hệ với Product (mỗi chi tiết xuất hàng có một sản phẩm)
     public function product()
     {

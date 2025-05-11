@@ -120,7 +120,7 @@
                                         {{-- @foreach ($suppliers as $supplier)
                                             <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                                         @endforeach --}}
-                                        <option value="0387d689-fca6-4e88-b512-32bbd9231cca">Spencer Ltd
+                                        <option value="370205c2-2e0c-11f0-bc53-0a0027000009">dấ
                                         </option>
 
                                     </select>
@@ -130,10 +130,10 @@
                                 <div class="form-group">
                                     <label>Người tạo</label>
                                     <!-- Hiển thị tên (readonly, không gửi về server) -->
-                                    <input type="text" class="form-control" value="Nam" readonly>
+                                    <input type="text" class="form-control" value="John Doe" readonly>
 
                                     <!-- Trường ẩn để gửi account_id -->
-                                    <input type="hidden" name="account_id" value="0990d54e-6cf7-47ca-af95-29237e815e78">
+                                    <input type="hidden" name="account_id" value="19542864-328a-4370-80fa-1923a44dfeaa">
                                 </div>
 
 

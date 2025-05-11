@@ -61,4 +61,13 @@ public function register(Request $request)
 
     return redirect()->route('register.form')->with('success', 'Đăng ký thành công!');
 }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();  // Đăng xuất người dùng
+        $request->session()->invalidate();  // Hủy session
+        $request->session()->regenerateToken();  // Regenerate CSRF token
+
+        return redirect('/login');  // Chuyển hướng về trang đăng nhập
+    }
 }

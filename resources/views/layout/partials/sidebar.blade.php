@@ -72,7 +72,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="/suppliers" class="nav-link">
               <i class="nav-icon far fa-circle text-info"></i>
               <p>Quản lý nhà cung cấp</p>
             </a>

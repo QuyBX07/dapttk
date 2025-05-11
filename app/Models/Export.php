@@ -9,9 +9,20 @@ class Export extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'export_id', 'customer_id', 'total_amount', 'export_date'
-    ];
+    protected $table = 'exports';
+    protected $primaryKey = 'export_id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+
+   protected $fillable = [
+    'export_id',
+    'customer_id',
+    'account_id',
+    'note',
+    'total_amount',
+    'export_date',
+];
 
     // Quan hệ với Customer (mỗi xuất khẩu thuộc về một khách hàng)
     public function customer()
@@ -24,5 +35,11 @@ class Export extends Model
     {
         return $this->hasMany(ExportDetail::class, 'export_id', 'export_id');
     }
+
+     public function account()
+    {
+        return $this->belongsTo(Account::class, 'account_id', 'id'); // account_id là khóa ngoại trong bảng exports, 'id' là khóa chính trong bảng accounts
+    }
+
 }
 
