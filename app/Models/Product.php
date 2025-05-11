@@ -34,7 +34,7 @@ class Product extends Model
     // Quan hệ với ExportDetail (mỗi sản phẩm có thể xuất hiện trong nhiều chi tiết xuất hàng)
     public function exportDetails()
     {
-        return $this->hasMany(ExportDetail::class, 'product_id', 'id');
+        return $this->hasMany(ExportDetail::class, 'product_id', 'product_id');
     }
 
     protected static function boot()
