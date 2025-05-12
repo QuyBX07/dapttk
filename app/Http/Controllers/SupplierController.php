@@ -79,4 +79,11 @@ public function getAll()
         return view('layout.supplier.content', compact('suppliers'));
     }
 
+    public function getAllSuppliers()
+    {
+        return Supplier::select('supplier_id', 'name')->get();
+
+    
+    }
+
 }

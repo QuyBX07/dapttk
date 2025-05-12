@@ -72,13 +72,46 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/admin/events/pending" class="nav-link">
+                            <a href="/imports/delete" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Hóa đơn bị xóa</p>
                             </a>
                         </li>
 
                     </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <p>
+                            Quản lý xuất hàng
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/exports" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Hóa đơn xuất hàng</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Hóa đơn bị xóa</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="/suppliers" class="nav-link">
+                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <p>
+                            Quản lý nhà cung cấp 
+                        </p>
+                    </a>
+            
                 </li>
             </ul>
         </nav>

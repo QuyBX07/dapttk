@@ -7,6 +7,7 @@ use App\Http\Services\ImportService;
 use App\Http\DTOs\Requests\ImportCreateData;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\ProductService;
+use App\Models\Supplier;
 
 class ImportController extends Controller
 {
@@ -26,6 +27,8 @@ class ImportController extends Controller
         $imports = $this->importService->getAll();
         $products = $this->productService->getAll();
 
+        $suppliers= Supplier::select('supplier_id', 'name')->get();
+
         // $importData = $imports->response()->getData(true);
 
         // return response()->json([
@@ -42,7 +45,8 @@ class ImportController extends Controller
         
         return view('layout.import.content', [
             'imports' => $imports,
-            'products' => $products
+            'products' => $products,
+            'suppliers' => $suppliers
         ]);
         // return $imports;
     }

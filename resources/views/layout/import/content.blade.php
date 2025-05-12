@@ -117,11 +117,10 @@
                                     <label for="supplier_id">Supplier</label>
                                     <select class="form-control select2" id="supplier_id" name="supplier_id" required>
                                         <option value="">-- Select Supplier --</option>
-                                        {{-- @foreach ($suppliers as $supplier)
+                                        @foreach ($suppliers as $supplier)
                                             <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                                        @endforeach --}}
-                                        <option value="370205c2-2e0c-11f0-bc53-0a0027000009">dấ
-                                        </option>
+                                        @endforeach
+                                      
 
                                     </select>
                                 </div>
@@ -130,10 +129,10 @@
                                 <div class="form-group">
                                     <label>Người tạo</label>
                                     <!-- Hiển thị tên (readonly, không gửi về server) -->
-                                    <input type="text" class="form-control" value="John Doe" readonly>
+                                    <input type="text" class="form-control" value="{{Auth::user()->name}}" readonly>
 
                                     <!-- Trường ẩn để gửi account_id -->
-                                    <input type="hidden" name="account_id" value="19542864-328a-4370-80fa-1923a44dfeaa">
+                                    <input type="hidden" name="account_id" value="{{Auth::user()->id}}">
                                 </div>
 
 

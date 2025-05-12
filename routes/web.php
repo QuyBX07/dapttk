@@ -53,10 +53,11 @@ Route::middleware(['auth:account'])->group(function () {
 
     // import routes
     Route::get('/imports',[ImportController::class,'getAll']);
+    Route::post('/imports/create', [ImportController::class, 'create']);
+    Route::get('/imports/delete',[ImportController::class,'getdelete']);
     Route::get('/imports/p/p',[ImportController::class,'postman']);
     Route::delete('/imports/delete/{id}', [ImportController::class, 'delete']);
     Route::get('/imports/{id}',[ImportController::class,'getDetail']);
-    Route::post('/imports/create', [ImportController::class, 'create']);
 
     // category routes
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
@@ -79,6 +80,7 @@ Route::middleware(['auth:account'])->group(function () {
     Route::delete('/suppliers/delete/{id}', [SupplierController::class, 'delete']);
     Route::put('/suppliers/update/{id}', [SupplierController::class, 'update']);
     Route::post('/suppliers/create', [SupplierController::class, 'create']);
+    Route::get('/suppliers/all', [SupplierController::class, 'getAllSuppliers']);
 });
 
 
