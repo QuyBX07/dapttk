@@ -1,17 +1,15 @@
 <?php
 namespace App\Http\Services;
 
-use App\Http\Repositories\Eloquent\ProductRepository;
 use App\Http\DTOs\Requests\ProductCreateData;
 use App\Models\Product;
+use App\Http\Repositories\Interfaces\ProductRepoInterface;
 use Illuminate\Support\Collection;
 
 
 class ProductService
 {
-    protected ProductRepository $productRepo;
-    public function __construct(ProductRepository $productRepo) {
-        $this->productRepo = $productRepo;
+    public function __construct(protected ProductRepoInterface $productRepo) {
     }
 
     public function getAll()

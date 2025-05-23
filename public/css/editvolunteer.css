@@ -1,0 +1,64 @@
+
+.container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+    margin: auto;
+}
+.avatar {
+    width: 80px;
+    height: 80px;
+    background-color: #e91e63;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 10px;
+    border: 2px solid #ff5722;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+h2 {
+    margin: 10px 0;
+    font-size: 20px;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0.5;
+}
+.update-btn {
+    background-color: #ff5722;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.update-btn:hover {
+    background-color: #e64a19;
+}

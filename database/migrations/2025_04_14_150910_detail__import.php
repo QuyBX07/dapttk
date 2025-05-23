@@ -8,24 +8,24 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('import_details', function (Blueprint $table) {
-            $table->uuid('importdetail_id')->primary(); // UUID làm khóa chính
-            $table->uuid('product_id');   // Khóa ngoại trỏ đến bảng products
-            $table->uuid('import_id');    // Khóa ngoại trỏ đến bảng imports
-            $table->integer('quantity');   // Số lượng sản phẩm nhập
-            $table->decimal('price', 15, 2); // Giá nhập sản phẩm
+            $table->uuid('importdetail_id')->primary(); 
+            $table->uuid('product_id');   
+            $table->uuid('import_id');    
+            $table->integer('quantity');   
+            $table->decimal('price', 15, 2); 
 
-            // Thiết lập quan hệ khóa ngoại
+           
             $table->foreign('product_id')
                   ->references('product_id')
                   ->on('products')
-                  ->onDelete('cascade'); // Khi xóa sản phẩm sẽ xóa chi tiết nhập khẩu liên quan
+                  ->onDelete('cascade'); 
 
             $table->foreign('import_id')
                   ->references('import_id')
                   ->on('imports')
-                  ->onDelete('cascade'); // Khi xóa nhập khẩu sẽ xóa chi tiết nhập khẩu liên quan
+                  ->onDelete('cascade'); 
 
-            $table->timestamps(); // created_at & updated_at
+            $table->timestamps();
         });
     }
 

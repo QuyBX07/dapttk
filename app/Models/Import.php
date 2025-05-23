@@ -16,10 +16,10 @@ class Import extends Model
     protected $keyType = 'string'; // UUID là kiểu string
 
     protected $fillable = [
-        'import_id', 'supplier_id', 'total_amount', 'import_date'
+        'import_id', 'supplier_id', 'total_amount','account_id','is_delete','note', 'import_date'
     ];
 
-    // Quan hệ với Customer (mỗi nhập khẩu thuộc về một khách hàng)
+    // Quan hệ với supplier (mỗi nhập khẩu thuộc về một nhà cung cấp)
     public function Supplier()
     {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'supplier_id');
@@ -31,7 +31,11 @@ class Import extends Model
         return $this->hasMany(ImportDetail::class, 'import_id', 'import_id');
     }
 
-
+    // Quan hệ với Account (người tạo phiếu nhập)
+    public function account()
+    {
+        return $this->belongsTo(Account::class, 'account_id', 'id');
+    }
     protected static function booted(): void
     {
         static::creating(function ($import) {

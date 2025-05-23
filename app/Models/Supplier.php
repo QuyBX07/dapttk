@@ -4,8 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
-
+use Illuminate\Support\Str; // Đảm bảo đã import Str
 
 class Supplier extends Model
 {
@@ -23,11 +22,20 @@ class Supplier extends Model
         'address',
     ];
 
+    // Tự động tạo UUID khi tạo mới nhà cung cấp
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($supplier) {
+            // Tạo UUID v4 cho supplier_id
+            $supplier->supplier_id = (string) Str::uuid();
+        });
+    }
+
     // Nếu có quan hệ với bảng imports
     public function imports()
     {
         return $this->hasMany(Import::class, 'supplier_id', 'supplier_id');
     }
-
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -7,17 +8,22 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('imports', function (Blueprint $table) {
-            $table->uuid('import_id')->primary(); // UUID làm khóa chính
-            $table->uuid('supplier_id');   // Khóa ngoại trỏ đến bảng customers
+            $table->uuid('import_id')->primary(); 
+            $table->uuid('supplier_id');  
             $table->decimal('total_amount', 15, 2); // Tổng tiền, độ chính xác cao
-            $table->date('import_date'); // Ngày nhập
-
+            $table->boolean('is_delete')->default(false); 
+            $table->string('note')->nullable(); // Ghi chú nếu xóa mềm
+            $table->uuid('account_id'); 
+            $table->foreign('account_id')
+                ->references('id') 
+                ->on('accounts')
+                ->onDelete('cascade'); 
             $table->foreign('supplier_id')
-                  ->references('supplier_id')
-                  ->on('suppliers')
-                  ->onDelete('cascade'); // Khi xóa khách hàng thì xóa luôn nhập khẩu liên quan
+                ->references('supplier_id')
+                ->on('suppliers')
+                ->onDelete('cascade');
 
-                $table->timestamps(); // created_at & updated_at
+            $table->timestamps(); 
         });
     }
 
@@ -26,4 +32,3 @@ return new class extends Migration {
         Schema::dropIfExists('imports');
     }
 };
-

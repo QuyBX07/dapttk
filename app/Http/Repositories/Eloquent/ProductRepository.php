@@ -1,15 +1,14 @@
 <?php
 namespace App\Http\Repositories\Eloquent;
-use App\Http\Repositories\Interfaces\BaseRepositoryInterface;
 use App\Models\Product;
-use Illuminate\Support\Collection;
-use App\Http\Repositories\Interfaces\SearchRepositoryInterface;
-
-class ProductRepository implements BaseRepositoryInterface, SearchRepositoryInterface
+use App\Http\Repositories\Interfaces\ProductRepoInterface;
+class ProductRepository implements ProductRepoInterface
 {
     public function findAll()
     {
-        return Product::with('category')->paginate(2);
+        return Product::with('category')
+        ->orderBy('updated_at', 'desc')
+        ->paginate(20);
     }
 
     public function find(string $id)
@@ -41,7 +40,8 @@ class ProductRepository implements BaseRepositoryInterface, SearchRepositoryInte
                       $sub->where('name', 'LIKE', "%{$query}%");
                   });
             })
-            ->paginate(2);
+            ->orderBy('updated_at', 'desc')
+            ->paginate(20);
     }
     
 }

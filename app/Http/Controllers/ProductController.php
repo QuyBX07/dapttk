@@ -20,12 +20,15 @@ class ProductController extends Controller
     /**
      * Get all products.
      */
-    public function getAll(): JsonResponse
+    public function getAll()
     {
         $products = $this->productService->getAll();
-        return response()->json([
-            'success' => true,
-            'data' => $products
+        // return response()->json([
+        //     'success' => true,
+        //     'data' => $products
+        // ]);
+        return view('layout.product.content', [
+            'products' => $products
         ]);
     }
 
@@ -46,81 +49,72 @@ class ProductController extends Controller
      */
     public function create(ProductRequest $request)
     {
-        // Lấy dữ liệu đã được xác thực từ request
+        // Lấy dữ liệu đã được validate
         $validatedData = $request->validated();
+
+        // Xử lý lưu ảnh nếu có
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 'public'); // Lưu vào storage/app/public/images
+            $validatedData['image'] = 'storage/' . $imagePath; // Lưu đường dẫn để sử dụng khi hiển thị
+        } else {
+            $validatedData['image'] = null;
+        }
+
+        // Tạo DTO
         $productDTO = ProductCreateData::fromArray($validatedData);
-        // Chuyển đổi dữ liệu thành ProductDTO
-        // $productDTO = new ProductCreateData(
-        //     $validatedData['name'],
-        //     $validatedData['category_id'],
-        //     $validatedData['description'],
-        //     $validatedData['unit'],
-        //     $validatedData['quantity'],
-        //     $validatedData['image'],
-        //     (float) $validatedData['price'],
-        // );
-        
-        // Gửi DTO vào service để xử lý tạo sản phẩm
+
+        // Gọi service
         $product = $this->productService->create($productDTO);
 
-        return response()->json([
-            'success' => true,
-            'data' => $product
-        ], 201);
+        
+        return redirect()->back()->with('success', 'Thêm sản phẩm thành công!');
     }
+
 
     /**
      * Update an existing product.
      */
-    public function update(ProductRequest $request, string $id): JsonResponse
+    public function update(ProductRequest $request, string $id)
     {
         // Lấy dữ liệu đã được xác thực từ request
         $validatedData = $request->validated();
+        // Xử lý lưu ảnh nếu có
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 'public'); // Lưu vào storage/app/public/images
+            $validatedData['image'] = 'storage/' . $imagePath; // Lưu đường dẫn để sử dụng khi hiển thị
+        } else {
+            $validatedData['image'] = $request->input('old_image');
+        }
+
 
         $productDTO = ProductCreateData::fromArray($validatedData);
 
 
-        // Chuyển đổi dữ liệu thành ProductDTO
-        // $productDTO = new ProductCreateData(
-        //     $validatedData['name'],
-        //     $validatedData['category_id'],
-        //     $validatedData['description'],
-        //     $validatedData['unit'],
-        //     $validatedData['quantity'],
-        //     $validatedData['image'],
-        //     (float) $validatedData['price'],
-        // );
-        
+
 
         // Gửi DTO vào service để xử lý cập nhật sản phẩm
         $product = $this->productService->update($id, $productDTO);
 
-        return response()->json([
-            'success' => true,
-            'data' => $product
-        ]);
+     
+        return redirect()->back()->with('success', 'Cập nhật sản phẩm thành công!');
     }
 
     /**
      * Delete a product by ID.
      */
-    public function delete(string $id): JsonResponse
+    public function delete(string $id)
     {
         $this->productService->delete($id);
-        return response()->json([
-            'success' => true,
-            'message' => 'Product deleted successfully.'
-        ]);
+        return redirect()->back()->with('success', 'Xóa sản phẩm thành công!');
     }
 
-    public function search(SearchRequest $request): JsonResponse
-{
-    $query = $request->input('query');
-    $products = $this->productService->search($query);
+    public function search(SearchRequest $request)
+    {
+        $query = $request->input('query');
+        $products = $this->productService->search($query);
 
-    return response()->json([
-        'success' => true,
-        'data' => $products
-    ]);
-}
+        return view('layout.product.content', [
+            'products' => $products
+        ]);
+    }
 }

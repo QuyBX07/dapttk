@@ -1,16 +1,13 @@
 <?php
 namespace App\Http\Services;
 
-use App\Http\Repositories\Eloquent\CustomerRepository;
 use App\Http\DTOs\Requests\CustomerCreateData;
 use App\Models\Customer;
-
+use App\Http\Repositories\Interfaces\CustomerRepoInterface;
 
 class CustomerService
 {
-    protected CustomerRepository $customerRepo;
-    public function __construct(CustomerRepository $customerRepo) {
-        $this->customerRepo = $customerRepo;
+    public function __construct(protected CustomerRepoInterface $customerRepo) {
     }
 
     public function getAll()

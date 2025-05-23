@@ -1,0 +1,135 @@
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Header container */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    padding: 15px 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    margin-bottom: 30px;
+}
+
+/* Logo */
+.logo {
+    color: #ff5722;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s;
+}
+.logo::before {
+    content: "♥";
+    margin-right: 8px;
+    color: #ff5722;
+}
+.logo:hover {
+    color: #e64a19;
+}
+
+/* Thanh tìm kiếm */
+.search-bar {
+    margin: 0 30px;
+    position: relative;
+    max-width: 400px; /* Giới hạn độ rộng tối đa */
+    flex-shrink: 1;   /* Cho phép co lại khi không đủ chỗ */
+    width: 100%;
+}
+.search-bar input {
+    width: 100%;
+    padding: 12px 35px 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s;
+}
+.search-bar input:focus {
+    border-color: #ff5722;
+}
+.search-bar::before {
+    content: "🔍";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+}
+
+/* Các liên kết navigation */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+.nav-links a:hover {
+    color: #ff5722;
+    transform: translateY(-2px);
+}
+.nav-links a:not(.notification):not(.create-service)::after {
+    content: "▼";
+    margin-left: 6px;
+    font-size: 10px;
+}
+
+/* Nút Tạo chiến dịch */
+.nav-links .create-service {
+    background-color: #ff5722;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: inline-block;
+}
+.nav-links .create-service:hover {
+    background-color: #e64a19;
+}
+
+/* Icon thông báo */
+.nav-links .notification {
+    font-size: 24px;
+    color: #888;
+    transition: color 0.3s ease;
+}
+.nav-links .notification:hover {
+    color: #ff5722;
+}
+
+/* Avatar */
+.avatarheader {
+    width: 35px;
+    height: 35px;
+    background-color: #e91e63;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.avatarheader:hover {
+    background-color: #c2185b;
+}

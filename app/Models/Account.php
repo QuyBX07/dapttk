@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable; // dùng nếu muốn đăng nhập
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Support\Str; // dùng để tạo UUID
 
 class Account extends Authenticatable
 {
@@ -30,4 +31,13 @@ class Account extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function ($acount) {
+            if (empty($acount->id)) {
+                $acount->id = (string) Str::uuid();
+            }
+        });
+    }
 }
