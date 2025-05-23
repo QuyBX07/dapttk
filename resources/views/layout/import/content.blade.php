@@ -34,12 +34,11 @@
                                 <table class="table table-hover text-nowrap">
                                     <thead>
                                         <tr>
-                                            <th>Import ID</th>
+                                            <th>Mã phiếu</th>
                                             <th>Supplier</th>
                                             <th>Total Amount</th>
                                             <th>Note</th>
                                             <th>Created At</th>
-                                            <th>Updated At</th>
                                             <th>Create by</th>
                                             <th>Action</th>
                                         </tr>
@@ -47,42 +46,38 @@
                                     <tbody>
                                         @foreach ($imports as $import)
                                             <tr class="import-row" data-id="{{ $import['import_id'] }}">
-                                                <td
-                                                    style="max-width: 15%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
-                                                    {{ $import['import_id'] }}</td>
-                                                <td
-                                                    style="max-width: 20%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
-                                                    {{ $import['supplier']['name'] }}</td>
-                                                <td
-                                                    style="max-width: 15%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
-                                                    {{ number_format($import['total_amount'], 2) }}</td>
-                                                <td
-                                                    style="max-width: 20%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
-                                                    {{ $import['note'] }}</td>
-                                                <td
-                                                    style="max-width: 20%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
+                                                <td style="max-width: 20%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;"
+                                                    title="ID: {{ $import['import_id'] }}">
+                                                    PX-{{ \Carbon\Carbon::parse($import['created_at'])->format('Ym') }}-{{ sprintf('%03d', $loop->iteration) }}
+                                                </td>
+                                                <td style="max-width: 20%; white-space: normal;">
+                                                    {{ $import['supplier']['name'] }}
+                                                </td>
+                                                <td style="max-width: 15%; white-space: normal;">
+                                                    {{ number_format($import['total_amount'], 2) }}
+                                                </td>
+                                                <td style="max-width: 20%; white-space: normal;">
+                                                    {{ $import['note'] }}
+                                                </td>
+                                                <td style="max-width: 20%; white-space: normal;">
                                                     {{ \Carbon\Carbon::parse($import['created_at'])->format('Y-m-d H:i:s') }}
                                                 </td>
-                                                <td
-                                                    style="max-width: 20%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
-                                                    {{ \Carbon\Carbon::parse($import['updated_at'])->format('Y-m-d H:i:s') }}
+                                                <td style="max-width: 20%; white-space: normal;">
+                                                    {{ $import['account']['name'] }}
                                                 </td>
-                                                <td
-                                                    style="max-width: 20%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
-                                                    {{ $import['account']['name'] }}</td>
-
-
                                                 <td>
-                                                    <form action="{{ url('/imports/delete/' . $import->import_id) }}"
+                                                    <form id="delete-form-{{ $import->import_id }}"
+                                                        action="{{ url('/imports/delete/' . $import->import_id) }}"
                                                         method="POST" style="display:inline;">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger"
-                                                        onclick="event.stopPropagation(); return confirm('Bạn có chắc chắn muốn xóa nhập hàng này không?')">
+                                                    </form>
+                                                    <button class="btn btn-danger btn-delete"
+                                                        data-id="{{ $import->import_id }}">
                                                         Delete
                                                     </button>
-                                                    </form>
                                                 </td>
+
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -94,6 +89,7 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div><!-- /.container-fluid -->
@@ -118,21 +114,20 @@
                                     <select class="form-control select2" id="supplier_id" name="supplier_id" required>
                                         <option value="">-- Select Supplier --</option>
                                         @foreach ($suppliers as $supplier)
-                                            <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                            <option value="{{ $supplier->supplier_id }}">{{ $supplier->name }}</option>
                                         @endforeach
-                                      
-
                                     </select>
+
                                 </div>
 
                                 <!-- Người lập phiếu -->
                                 <div class="form-group">
                                     <label>Người tạo</label>
                                     <!-- Hiển thị tên (readonly, không gửi về server) -->
-                                    <input type="text" class="form-control" value="{{Auth::user()->name}}" readonly>
+                                    <input type="text" class="form-control" value="{{ Auth::user()->name }}" readonly>
 
                                     <!-- Trường ẩn để gửi account_id -->
-                                    <input type="hidden" name="account_id" value="{{Auth::user()->id}}">
+                                    <input type="hidden" name="account_id" value="{{ Auth::user()->id }}">
                                 </div>
 
 
@@ -152,6 +147,7 @@
                                             <select class="form-control select2 product-select"
                                                 name="details[0][product_id]" required>
                                                 <option value="">-- Select Product --</option>
+
                                                 @foreach ($products as $product)
                                                     <option value="{{ $product->product_id }}">{{ $product->name }}
                                                     </option>
@@ -216,19 +212,22 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <p><strong>Import ID:</strong> <span id="detail-import-id"></span></p>
+                            <p>
+                                <strong>Mã phiếu:</strong>
+                                <span id="detail-import-code" title="" style="cursor: help;"></span>
+                            </p>
                             <p><strong>Supplier:</strong> <span id="detail-supplier"></span></p>
                             <p><strong>Created by:</strong> <span id="detail-account"></span></p>
                             <p><strong>Note:</strong> <span id="detail-note"></span></p>
                             <p><strong>Total Amount:</strong> <span id="detail-total"></span></p>
-                            <p><strong>Import Date:</strong> <span id="detail-date"></span></p>
+                            <p><strong>Created At:</strong> <span id="detail-date"></span></p>
                             <hr>
                             <h5>Products</h5>
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Product</th>
-                                        <th>Qantity</th>
+                                        <th>Quantity</th>
                                         <th>Price</th>
                                         <th>Subtotal</th>
                                     </tr>
@@ -241,6 +240,7 @@
                     </div>
                 </div>
             </div>
+
 
 
             @if (session('success'))
@@ -296,10 +296,37 @@
         $(document).ready(function() {
             // $('#importForm').submit(function(event) {
             //     event.preventDefault();
+
             //     var formData = $(this).serialize(); // Lấy toàn bộ dữ liệu form
+
             //     console.log(formData); // Log dữ liệu ra console
             //     // Sau khi log, gửi dữ liệu đến server
             // });
+
+
+            // Xử lý sự kiện khi nhấn nút "Delete"
+            document.querySelectorAll('.btn-delete').forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Ngăn không cho sự kiện click lan ra .import-row
+                    e.preventDefault();
+
+                    const importId = this.getAttribute('data-id');
+                    Swal.fire({
+                        title: 'Bạn có chắc chắn muốn xóa nhập hàng này không?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Có, xóa ngay!',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('delete-form-' + importId).submit();
+                        }
+                    });
+                });
+            });
+
 
             $('#modal-import').on('show.bs.modal', function(event) {
                 const modal = $(this);
@@ -392,16 +419,24 @@
 
             bindProductEvents();
 
-            // Hiển thị chi tiết nhập hàng khi nhấn vào nút "View Detail"
+            // Hiển thị chi tiết nhập hàng khi nhấn vào row
             $('.import-row').on('click', function() {
                 const importId = $(this).data('id');
 
                 $.get(`/imports/${importId}`, function(data) {
-                    $('#detail-import-id').text(data.import_id);
+              
+                    // Hiển thị mã phiếu theo định dạng + tooltip ID gốc
+                    const createdDate = new Date(data.created_at);
+                    const yearMonth = createdDate.getFullYear().toString() + String(createdDate
+                        .getMonth() + 1).padStart(2, '0');
+                    const code = `PX-${yearMonth}-001`; // Bạn có thể thay số thứ tự
+
+                    $('#detail-import-code').text(code);
+                    $('#detail-import-code').attr('title', 'ID gốc: ' + data.import_id);
+
                     $('#detail-supplier').text(data.supplier.name);
                     $('#detail-total').text(parseFloat(data.total_amount).toFixed(2));
-                    $('#detail-date').text(new Date(data.created_at)
-                .toLocaleString()); // Hiển thị thời gian tạo
+                    $('#detail-date').text(createdDate.toLocaleString()); // Hiển thị thời gian tạo
                     $('#detail-note').text(data.note ?? 'Không có ghi chú');
                     $('#detail-account').text(data.account.name); // Người tạo
 
@@ -423,6 +458,7 @@
                     $('#modal-import-detail').modal('show');
                 });
             });
+
 
 
         });

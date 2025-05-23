@@ -45,5 +45,15 @@ class ImportService
     {
         return $this->importRepo->delete($id);
     }
+
+
+    public function getDeleted()
+    {
+        return $this->importRepo->getDeleted();
+    }
     
+
+    public function getTotalRevenueByYear($year){
+        return $this->importRepo->getTotalRevenueByYear($year);
+    }
 }

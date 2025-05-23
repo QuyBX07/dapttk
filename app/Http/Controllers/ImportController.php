@@ -48,7 +48,7 @@ class ImportController extends Controller
             'products' => $products,
             'suppliers' => $suppliers
         ]);
-        // return $imports;
+        // return $suppliers;
     }
 
 // get detail
@@ -94,5 +94,14 @@ class ImportController extends Controller
         $imports = $this->importService->getAll();
         $products = $this->productService->getAll();
         return $imports;
+    }
+    
+    // get deleted
+    public function getDeleted()
+    {
+        $imports = $this->importService->getDeleted();
+        return view('layout.import.viewDelete', [
+            'imports' => $imports,
+        ]);
     }
 }

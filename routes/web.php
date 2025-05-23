@@ -8,7 +8,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\SupplierController;
-
+use App\Http\Controllers\StatisticsController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -56,6 +56,7 @@ Route::middleware(['auth:account'])->group(function () {
     Route::post('/imports/create', [ImportController::class, 'create']);
     Route::get('/imports/delete',[ImportController::class,'getdelete']);
     Route::get('/imports/p/p',[ImportController::class,'postman']);
+    Route::get('/imports/onlydelete',[ImportController::class,'getDeleted']);
     Route::delete('/imports/delete/{id}', [ImportController::class, 'delete']);
     Route::get('/imports/{id}',[ImportController::class,'getDetail']);
 
@@ -81,6 +82,11 @@ Route::middleware(['auth:account'])->group(function () {
     Route::put('/suppliers/update/{id}', [SupplierController::class, 'update']);
     Route::post('/suppliers/create', [SupplierController::class, 'create']);
     Route::get('/suppliers/all', [SupplierController::class, 'getAllSuppliers']);
+
+
+
+    // Statistics routes
+    Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
 });
 
 
