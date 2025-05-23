@@ -53,7 +53,11 @@ class ImportService
     }
     
 
-    public function getTotalRevenueByYear($year){
-        return $this->importRepo->getTotalRevenueByYear($year);
+    public function getTotalImportCostByYear($year){
+        return $this->importRepo->getTotalImportCostByYear($year);
+    }
+
+    public function getTotalImportByMonth($year, $month){
+        return $this->importRepo->getTotalImportByMonth($year, $month);
     }
 }

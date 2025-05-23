@@ -8,7 +8,7 @@ use App\Http\Repositories\Interfaces\OnlyDeleteRepositoryInterface;
 interface ImportRepoInterface extends BaseRepositoryInterface, 
                                     SearchRepositoryInterface, 
                                     OnlyDeleteRepositoryInterface,
-                                    StatisticsRepositoryInterface
+                                    ImportStatisticsRepositoryInterface
 
 {
     public function findAll();
@@ -23,5 +23,6 @@ interface ImportRepoInterface extends BaseRepositoryInterface,
     public function search(string $query);
     public function getDeleted();
 
-    public function getTotalRevenueByYear($year);
+    public function getTotalImportCostByYear($year);
+    public function getTotalImportByMonth($year, $month);// tông doanh thu theo tháng
 }

@@ -10,10 +10,9 @@ use App\Http\Repositories\Interfaces\OnlyDeleteRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Repositories\Interfaces\StatisticsRepositoryInterface;
 use Illuminate\Support\Collection;
+use App\Models\Product;
 
-class ImportRepository implements ImportRepoInterface, 
-                                    OnlyDeleteRepositoryInterface,
-                                    StatisticsRepositoryInterface  
+class ImportRepository implements ImportRepoInterface
 {
     public function findAll()
     {
@@ -62,18 +61,29 @@ class ImportRepository implements ImportRepoInterface,
 
     public function create(array $importData)
     {
-
         return DB::transaction(function () use ($importData) {
-            // dd($importData->toArray()['import']);
-            $import = Import::create($importData['import']);  // Dữ liệu nhập khẩu
+            // Tính tổng tiền từ chi tiết
+            $totalAmount = collect($importData['details'])->reduce(function ($carry, $item) {
+                return $carry + ($item['quantity'] * $item['price']);
+            }, 0);
 
+            // Gán vào dữ liệu import
+            $importData['import']['total_amount'] = $totalAmount;
+
+            // Tạo phiếu nhập
+            $import = Import::create($importData['import']);
+
+            // Tạo chi tiết và cập nhật tồn kho
             foreach ($importData['details'] as $detail) {
-                $import->importDetails()->create($detail);  // Tạo chi tiết nhập khẩu
+                $import->importDetails()->create($detail);
+                Product::where('product_id', $detail['product_id'])->increment('quantity', $detail['quantity']);
             }
 
             return $import;
         });
     }
+
+
 
 
     public function search(string $query) {}
@@ -89,12 +99,20 @@ class ImportRepository implements ImportRepoInterface,
 
 
 
-    function getTotalRevenueByYear($year)
-{
-    return DB::table('export_details')
-        ->join('exports', 'export_details.export_id', '=', 'exports.export_id')
-        ->whereYear('exports.created_at', $year)
-        ->selectRaw('SUM(export_details.quantity * export_details.price) as total_revenue')
-        ->value('total_revenue'); // Trả về một giá trị duy nhất
-}
+    public function getTotalImportCostByYear($year)
+    {
+        return DB::table('imports')
+            ->whereYear('created_at', $year)
+            ->where('is_delete', false)
+            ->sum('total_amount');
+    }
+
+    public function getTotalImportByMonth($year, $month)
+    {
+        return DB::table('imports')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('is_delete', false)
+            ->sum('total_amount');
+    }
 }

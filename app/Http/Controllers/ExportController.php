@@ -10,9 +10,46 @@ use App\Models\Account;
 use App\Models\ExportDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Http\Services\ExportService;
 
 class ExportController extends Controller
 {
+
+    public function __construct(protected ExportService $exportService)
+    {
+        $this->exportService = $exportService;
+    }
+
+
+// Thống kê doanh thu
+    public function getTotalRevenueByYear(Request $request)
+    {
+        $year = $request->input('year', now()->year); // Mặc định là năm hiện tại nếu không truyền
+        $totalRevenue = $this->exportService->getTotalRevenueByYear($year);
+
+        return response()->json([
+            'total_revenue' => $totalRevenue,
+            'year' => $year,
+        ]);
+    }
+
+    public function getTotalRevenueByMonth(Request $request)
+    {
+        $year = $request->input('year', now()->year);   // Mặc định năm hiện tại
+        $month = $request->input('month', now()->month); // Mặc định tháng hiện tại
+
+        $totalRevenue = $this->exportService->getTotalRevenueByMonth($year, $month);
+
+        return response()->json([
+            'total_revenue' => $totalRevenue,
+            'year' => $year,
+            'month' => $month,
+        ]);
+    }
+
+
+
+
     // Hiển thị danh sách đơn xuất
     public function index()
     {
@@ -24,40 +61,40 @@ class ExportController extends Controller
     }
 
     public function show($id)
-{
-    $export = Export::with(['customer', 'account', 'details.product'])->findOrFail($id);
+    {
+        $export = Export::with(['customer', 'account', 'details.product'])->findOrFail($id);
 
-    return response()->json([
-        'export_id' => $export->export_id,
-        'customer' => $export->customer->name,
-        'account' => $export->account->name,
-        'total_amount' => $export->total_amount,
-        'created_at' => $export->created_at->format('Y-m-d H:i:s'),
-        'products' => $export->details->map(function ($detail) {
-            return [
-                'name' => $detail->product->name,
-                'quantity' => $detail->quantity,
-                'price' => $detail->price,
-                'subtotal' => $detail->quantity * $detail->price,
-            ];
-        })
-    ]);
-}
-
-public function detail($id)
-{
-    $export = Export::with(['customer', 'account'])->find($id);
-    $details = ExportDetail::with('product')->where('export_id', $id)->get();
-
-    if (!$export) {
-        return response()->json(['error' => 'Export not found'], 404);
+        return response()->json([
+            'export_id' => $export->export_id,
+            'customer' => $export->customer->name,
+            'account' => $export->account->name,
+            'total_amount' => $export->total_amount,
+            'created_at' => $export->created_at->format('Y-m-d H:i:s'),
+            'products' => $export->details->map(function ($detail) {
+                return [
+                    'name' => $detail->product->name,
+                    'quantity' => $detail->quantity,
+                    'price' => $detail->price,
+                    'subtotal' => $detail->quantity * $detail->price,
+                ];
+            })
+        ]);
     }
 
-    return response()->json([
-        'export' => $export,
-        'details' => $details
-    ]);
-}
+    public function detail($id)
+    {
+        $export = Export::with(['customer', 'account'])->find($id);
+        $details = ExportDetail::with('product')->where('export_id', $id)->get();
+
+        if (!$export) {
+            return response()->json(['error' => 'Export not found'], 404);
+        }
+
+        return response()->json([
+            'export' => $export,
+            'details' => $details
+        ]);
+    }
 
 
 
@@ -106,63 +143,62 @@ public function detail($id)
         return redirect('/exports')->with('success', 'Xóa đơn xuất thành công.');
     }
 
-public function store(Request $request)
-{
-    $request->validate([
-        'customer_id' => 'required|uuid|exists:customers,customer_id',
-        'details' => 'required|array|min:1',
-        'details.*.product_id' => 'required|uuid|exists:products,product_id',
-        'details.*.quantity' => 'required|numeric|min:1',
-        'details.*.price' => 'required|numeric|min:0',
-        'account_id' => 'required|uuid|exists:accounts,id',  // Kiểm tra account_id hợp lệ và tồn tại
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'customer_id' => 'required|uuid|exists:customers,customer_id',
+            'details' => 'required|array|min:1',
+            'details.*.product_id' => 'required|uuid|exists:products,product_id',
+            'details.*.quantity' => 'required|numeric|min:1',
+            'details.*.price' => 'required|numeric|min:0',
+            'account_id' => 'required|uuid|exists:accounts,id',  // Kiểm tra account_id hợp lệ và tồn tại
+        ]);
 
-  
 
-    // Tính tổng tiền
-    $totalAmount = array_reduce($request->details, function ($carry, $item) {
-        return $carry + ($item['quantity'] * $item['price']);
-    }, 0);
 
-    // Tạo phiếu xuất
-    $export = Export::create([
-        'export_id' => Str::uuid(),
-        'customer_id' => $request->customer_id,
-        'account_id' => $request->account_id, // Đảm bảo trường này có giá trị hợp lệ
-        'total_amount' => $totalAmount,
-        'export_date' => now()->toDateString(),
-        'is_delete' => 0, // Thiết lập mặc định is_delete là 0 (chưa xóa)
-    ]);
+        // Tính tổng tiền
+        $totalAmount = array_reduce($request->details, function ($carry, $item) {
+            return $carry + ($item['quantity'] * $item['price']);
+        }, 0);
 
-    // Tạo chi tiết phiếu xuất
-    foreach ($request->details as $detail) {
-    ExportDetail::create([
-        'exportdetail_id' => Str::uuid(), // Tạo UUID cho khóa chính
-        'export_id' => $export->export_id,
-        'product_id' => $detail['product_id'],
-        'quantity' => $detail['quantity'],
-        'price' => $detail['price'],
-    ]);
-}
+        // Tạo phiếu xuất
+        $export = Export::create([
+            'export_id' => Str::uuid(),
+            'customer_id' => $request->customer_id,
+            'account_id' => $request->account_id, // Đảm bảo trường này có giá trị hợp lệ
+            'total_amount' => $totalAmount,
+            'export_date' => now()->toDateString(),
+            'is_delete' => 0, // Thiết lập mặc định is_delete là 0 (chưa xóa)
+        ]);
 
-    return redirect()->back()->with('success', 'Thêm phiếu xuất thành công.');
-}
+        // Tạo chi tiết phiếu xuất
+        foreach ($request->details as $detail) {
+            ExportDetail::create([
+                'exportdetail_id' => Str::uuid(), // Tạo UUID cho khóa chính
+                'export_id' => $export->export_id,
+                'product_id' => $detail['product_id'],
+                'quantity' => $detail['quantity'],
+                'price' => $detail['price'],
+            ]);
+        }
 
-public function search(Request $request)
-{
-    $query = $request->input('query');
+        return redirect()->back()->with('success', 'Thêm phiếu xuất thành công.');
+    }
 
-    $exports = Export::with(['customer', 'account'])
-        ->whereHas('customer', function ($q) use ($query) {
-            $q->where('name', 'like', "%$query%");
-        })
-        ->orWhereHas('account', function ($q) use ($query) {
-            $q->where('name', 'like', "%$query%");
-        })
-        ->where('is_delete', 0) // nếu bạn có soft delete
-        ->paginate(10);
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
 
-    return view('layout.export.content', compact('exports'));
+        $exports = Export::with(['customer', 'account'])
+            ->whereHas('customer', function ($q) use ($query) {
+                $q->where('name', 'like', "%$query%");
+            })
+            ->orWhereHas('account', function ($q) use ($query) {
+                $q->where('name', 'like', "%$query%");
+            })
+            ->where('is_delete', 0) // nếu bạn có soft delete
+            ->paginate(10);
 
-}
+        return view('layout.export.content', compact('exports'));
+    }
 }

@@ -33,32 +33,32 @@ Route::get('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->
 Route::middleware(['auth:account'])->group(function () {
 
     Route::get('/', function () {
-    return view('welcome');
-});
+        return view('welcome');
+    });
     // product routes
-    Route::get('/products',[ProductController::class,'getAll']);
-    Route::get('/product/{id}',[ProductController::class,'getDetail']);
+    Route::get('/products', [ProductController::class, 'getAll']);
+    Route::get('/product/{id}', [ProductController::class, 'getDetail']);
     Route::post('/products/create', [ProductController::class, 'create']);
     Route::put('/products/update/{id}', [ProductController::class, 'update']);
     Route::delete('/products/delete/{id}', [ProductController::class, 'delete']);
-    Route::get('/search/products',[ProductController::class,'search']);
+    Route::get('/search/products', [ProductController::class, 'search']);
 
     // customer routes
-    Route::get('/customers',[CustomerController::class,'getAll']);
-    Route::get('/customer/{id}',[CustomerController::class,'getDetail']);
-    Route::get('/search/customers',[CustomerController::class,'search']);
+    Route::get('/customers', [CustomerController::class, 'getAll']);
+    Route::get('/customer/{id}', [CustomerController::class, 'getDetail']);
+    Route::get('/search/customers', [CustomerController::class, 'search']);
     Route::delete('/customers/delete/{id}', [CustomerController::class, 'delete']);
     Route::put('/customers/update/{id}', [CustomerController::class, 'update']);
     Route::post('/customers/create', [CustomerController::class, 'create']);
 
     // import routes
-    Route::get('/imports',[ImportController::class,'getAll']);
+    Route::get('/imports', [ImportController::class, 'getAll']);
     Route::post('/imports/create', [ImportController::class, 'create']);
-    Route::get('/imports/delete',[ImportController::class,'getdelete']);
-    Route::get('/imports/p/p',[ImportController::class,'postman']);
-    Route::get('/imports/onlydelete',[ImportController::class,'getDeleted']);
+    Route::get('/imports/delete', [ImportController::class, 'getdelete']);
+    Route::get('/imports/p/p', [ImportController::class, 'postman']);
+    Route::get('/imports/onlydelete', [ImportController::class, 'getDeleted']);
     Route::delete('/imports/delete/{id}', [ImportController::class, 'delete']);
-    Route::get('/imports/{id}',[ImportController::class,'getDetail']);
+    Route::get('/imports/{id}', [ImportController::class, 'getDetail']);
 
     // category routes
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
@@ -86,7 +86,11 @@ Route::middleware(['auth:account'])->group(function () {
 
 
     // Statistics routes
+
     Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
+
+
+    Route::get('/statistics/data', [StatisticsController::class, 'getStatistics'])->name('statistics.data');
 });
 
 
