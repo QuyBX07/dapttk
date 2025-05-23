@@ -11,6 +11,8 @@ use App\Http\Repositories\Interfaces\ImportRepoInterface;
 use App\Http\Repositories\Eloquent\ImportRepository;
 use App\Http\Repositories\Interfaces\CustomerRepoInterface;
 use App\Http\Repositories\Eloquent\CustomerRepository;
+use App\Http\Repositories\Interfaces\CategoryRepositoryInterface;
+use App\Http\Repositories\Eloquent\CategoryRepository;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -22,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ProductRepoInterface::class, ProductRepository::class);
         $this->app->bind(CustomerRepoInterface::class, CustomerRepository::class);
         $this->app->bind(ImportRepoInterface::class, ImportRepository::class);
+        $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
     }
 
     /**
@@ -30,8 +33,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrap(); // <- Thêm dòng này
-
-        
 
         //
     }

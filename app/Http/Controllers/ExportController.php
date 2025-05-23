@@ -14,18 +14,25 @@ use Illuminate\Support\Str;
 class ExportController extends Controller
 {
     // Hiển thị danh sách đơn xuất
-    public function index()
-    {
-        $exports = Export::with(['customer', 'account'])->paginate(10);
-        $products = Product::all();
-        $customers = Customer::all();
-
-        return view('layout.export.content', compact('exports', 'products', 'customers'));
-    }
-
-    public function show($id)
+public function index()
 {
-    $export = Export::with(['customer', 'account', 'details.product'])->findOrFail($id);
+    $exports = Export::with(['customer', 'account'])
+        ->where('is_delete', 0)
+        ->paginate(10);
+
+    $products = Product::all();
+    $customers = Customer::all();
+
+    return view('layout.export.content', compact('exports', 'products', 'customers'));
+}
+
+
+public function show($id)
+{
+    $export = Export::with(['customer', 'account', 'details.product'])
+        ->where('export_id', $id)
+        ->where('is_delete', 0)
+        ->firstOrFail();
 
     return response()->json([
         'export_id' => $export->export_id,
@@ -44,6 +51,8 @@ class ExportController extends Controller
     ]);
 }
 
+    // Hiển thị chi tiết đơn xuất
+
 public function detail($id)
 {
     $export = Export::with(['customer', 'account'])->find($id);
@@ -58,50 +67,12 @@ public function detail($id)
         'details' => $details
     ]);
 }
-
-
-
-    // // Cập nhật đơn xuất
-    // public function update(Request $request, $id)
-    // {
-    //     DB::beginTransaction();
-
-    //     try {
-    //         $export = Export::findOrFail($id);
-
-    //         $export->update([
-    //             'customer_id'   => $request->customer_id,
-    //             'note'          => $request->note,
-    //             'total_amount'  => $request->total_amount,
-    //         ]);
-
-    //         // Xóa chi tiết cũ
-    //         ExportDetail::where('export_id', $id)->delete();
-
-    //         // Lưu chi tiết mới
-    //         foreach ($request->details as $detail) {
-    //             ExportDetail::create([
-    //                 'export_id' => $id,
-    //                 'product_id' => $detail['product_id'],
-    //                 'quantity' => $detail['quantity'],
-    //                 'price' => $detail['price'],
-    //             ]);
-    //         }
-
-    //         DB::commit();
-
-    //         return redirect('/exports')->with('success', 'Cập nhật đơn xuất thành công.');
-    //     } catch (\Exception $e) {
-    //         DB::rollback();
-    //         return back()->with('error', 'Lỗi: ' . $e->getMessage());
-    //     }
-    // }
-
     // Xóa đơn xuất
     public function destroy($id)
     {
         $export = Export::where('export_id', $id)->firstOrFail();
-        $export->delete();
+        $export->is_delete = 1;
+        $export->save();
 
         return redirect('/exports')->with('success', 'Xóa đơn xuất thành công.');
     }
@@ -116,8 +87,6 @@ public function store(Request $request)
         'details.*.price' => 'required|numeric|min:0',
         'account_id' => 'required|uuid|exists:accounts,id',  // Kiểm tra account_id hợp lệ và tồn tại
     ]);
-
-  
 
     // Tính tổng tiền
     $totalAmount = array_reduce($request->details, function ($carry, $item) {
@@ -134,19 +103,33 @@ public function store(Request $request)
         'is_delete' => 0, // Thiết lập mặc định is_delete là 0 (chưa xóa)
     ]);
 
-    // Tạo chi tiết phiếu xuất
+    // Tạo chi tiết phiếu xuất và trừ số lượng sản phẩm
     foreach ($request->details as $detail) {
-    ExportDetail::create([
-        'exportdetail_id' => Str::uuid(), // Tạo UUID cho khóa chính
-        'export_id' => $export->export_id,
-        'product_id' => $detail['product_id'],
-        'quantity' => $detail['quantity'],
-        'price' => $detail['price'],
-    ]);
+        // Tạo chi tiết phiếu xuất
+        ExportDetail::create([
+            'exportdetail_id' => Str::uuid(), // Tạo UUID cho khóa chính
+            'export_id' => $export->export_id,
+            'product_id' => $detail['product_id'],
+            'quantity' => $detail['quantity'],
+            'price' => $detail['price'],
+        ]);
+
+        // Cập nhật tồn kho sản phẩm
+        $product = Product::findOrFail($detail['product_id']);
+
+        // Kiểm tra nếu số lượng tồn kho còn đủ để xuất
+        if ($product->quantity < $detail['quantity']) {
+            return back()->with('error', 'Sản phẩm "' . $product->name . '" không đủ số lượng tồn kho.');
+        }
+
+        // Trừ số lượng sản phẩm trong kho
+        $product->quantity -= $detail['quantity'];
+        $product->save();
+    }
+
+    return redirect('/exports')->with('success', 'Tạo phiếu xuất thành công.');
 }
 
-    return redirect()->back()->with('success', 'Thêm phiếu xuất thành công.');
-}
 
 public function search(Request $request)
 {

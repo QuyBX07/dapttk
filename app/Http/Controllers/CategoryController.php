@@ -4,9 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Http\Services\CategoryService;
+
 
 class CategoryController extends Controller
 {
+    protected CategoryService $categoryService;
+
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
+    }
     public function index()
 {
     $categories = Category::paginate(10); // hoặc tùy số lượng bạn muốn phân trang
@@ -14,15 +22,16 @@ class CategoryController extends Controller
 }
 
 
-public function store(Request $request)
-{
-    $request->validate(['name' => 'required|string|max:255']);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
 
-    Category::create(['name' => $request->name]);
+        $this->categoryService->create($validated);
 
-    return redirect('/categories')->with('success', 'Thêm danh mục thành công');
-}
-
+        return redirect()->route('categories.index')->with('success', 'Thêm danh mục thành công!');
+    }
 public function update(Request $request, $category_id)
 {
     $request->validate([

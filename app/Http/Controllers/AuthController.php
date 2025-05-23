@@ -38,9 +38,7 @@ class AuthCOntroller extends Controller
                 return redirect()->intended('/');
             }
         
-            return back()->withErrors([
-                'email' => 'Email hoặc mật khẩu không đúng.',
-            ]);
+            return back()->with('error', 'Bạn nhập sai email hoặc mật khẩu!');
         }
 
 public function register(Request $request)
