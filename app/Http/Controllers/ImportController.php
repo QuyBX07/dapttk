@@ -8,6 +8,7 @@ use App\Http\DTOs\Requests\ImportCreateData;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\ProductService;
 use App\Models\Supplier;
+use Illuminate\Http\Request;
 
 class ImportController extends Controller
 {
@@ -48,7 +49,7 @@ class ImportController extends Controller
             'products' => $products,
             'suppliers' => $suppliers
         ]);
-        // return $imports;
+        // return $suppliers;
     }
 
 // get detail
@@ -95,4 +96,42 @@ class ImportController extends Controller
         $products = $this->productService->getAll();
         return $imports;
     }
+    
+    // get deleted
+    public function getDeleted()
+    {
+        $imports = $this->importService->getDeleted();
+        return view('layout.import.viewDelete', [
+            'imports' => $imports,
+        ]);
+    }
+
+    // get total import cost by year
+ 
+
+public function getTotalImportCostByYear(Request $request)
+{
+    $year = $request->input('year', now()->year); // Lấy năm từ query hoặc mặc định là năm hiện tại
+    $totalImportCost = $this->importService->getTotalImportCostByYear($year);
+
+    return response()->json([
+        'total_import_cost' => $totalImportCost,
+        'year' => $year,
+    ]);
+}
+
+public function getTotalImportByMonth(Request $request)
+{
+    $year = $request->input('year', now()->year);   // Lấy năm nếu có hoặc mặc định là năm hiện tại
+    $month = $request->input('month', now()->month); // Lấy tháng nếu có hoặc mặc định là tháng hiện tại
+
+    $totalImport = $this->importService->getTotalImportByMonth($year, $month);
+
+    return response()->json([
+        'total_import' => $totalImport,
+        'year' => $year,
+        'month' => $month,
+    ]);
+}
+
 }
