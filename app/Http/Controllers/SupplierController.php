@@ -3,22 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Supplier;
 use App\Http\Services\SupplierService;
 use Illuminate\Validation\ValidationException;
 
 class SupplierController extends Controller
 {
-    public function __construct(protected SupplierService $supplierService) {}
-
-
-    // Hiển thị danh sách nhà cung cấp (có phân trang)
+    // Hiển thị tất cả nhà cung cấp
     public function getAll()
     {
-        $suppliers = $this->supplierService->getPaginated(10); // Sử dụng Service
+        // Phân trang danh sách nhà cung cấp
+        $suppliers = Supplier::paginate(10); // 10 là số bản ghi trên mỗi trang
         return view('layout.supplier.content', compact('suppliers'));
     }
 
-    // Tạo mới nhà cung cấp
+    public function __construct(protected SupplierService $supplierService) {}
+
     public function create(Request $request)
     {
         try {
@@ -31,55 +31,49 @@ class SupplierController extends Controller
         }
     }
 
-    // Chi tiết nhà cung cấp
     public function getDetail($id)
     {
-        $supplier = $this->supplierService->getDetail($id);
+        $supplier = Supplier::findOrFail($id);
         return view('suppliers.detail', compact('supplier'));
     }
 
-    // Cập nhật nhà cung cấp
     public function update(Request $request, $id)
     {
-        try {
-            $validated = $request->validate([
-                'name' => 'required|string',
-                'phone' => 'required|string',
-                'email' => 'required|email',
-                'address' => 'nullable|string',
-            ]);
+        // Tìm nhà cung cấp
+        $supplier = Supplier::findOrFail($id);
 
-            $this->supplierService->update($id, $validated);
-            return redirect()->back()->with('success', 'Cập nhật nhà cung cấp thành công!');
-        } catch (ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors())->withInput();
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Đã xảy ra lỗi: ' . $e->getMessage())->withInput();
-        }
+        // Validate dữ liệu
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'phone' => 'required|string',
+            'email' => 'required|email',
+            'address' => 'nullable|string',
+        ]);
+
+        // Cập nhật thông tin nhà cung cấp
+        $supplier->update($validated);
+        return redirect()->back()->with('success', 'Updated khách hàng thành công!');
     }
 
-    // Xóa nhà cung cấp
     public function delete($id)
     {
-        try {
-            $this->supplierService->delete($id);
-            return redirect()->back()->with('success', 'Xóa nhà cung cấp thành công!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Lỗi khi xóa: ' . $e->getMessage());
-        }
+        // Tìm và xóa nhà cung cấp
+        $supplier = Supplier::findOrFail($id);
+        $supplier->delete();
+        return redirect()->back()->with('success', 'Xóa khách hàng thành công!');
     }
 
-    // Tìm kiếm nhà cung cấp
     public function search(Request $request)
     {
         $query = $request->get('query');
-        $suppliers = $this->supplierService->search($query);
+        $suppliers = Supplier::where('name', 'LIKE', "%{$query}%")
+            ->orWhere('email', 'LIKE', "%{$query}%")
+            ->paginate(10);
         return view('layout.supplier.content', compact('suppliers'));
     }
 
-    // Lấy danh sách tất cả nhà cung cấp (dùng cho dropdown/select box)
     public function getAllSuppliers()
     {
-        return $this->supplierService->getAllForSelect();
+        return Supplier::select('supplier_id', 'name')->get();
     }
 }

@@ -17,6 +17,8 @@ use App\Http\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Http\Repositories\Eloquent\CategoryRepository;
 use App\Http\Repositories\Interfaces\SupplierRepoInterface;
 use App\Http\Repositories\Eloquent\SupplierRepository;
+use App\Http\Repositories\Interfaces\AccountRepositoryInterface;
+use App\Http\Repositories\Eloquent\AccountRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(ExportRepoInterface::class, ExportRepository::class);
         $this->app->bind(SupplierRepoInterface::class, SupplierRepository::class);
+        $this->app->bind(
+            AccountRepositoryInterface::class,
+            AccountRepository::class
+        );
     }
 
     /**

@@ -125,15 +125,16 @@
 
                 </li>
 
-                {{-- <li class="nav-item" >
-                    <a href="/accounts" class="nav-link ">
-                        <i class="nav-icon fas fa-calendar-alt"></i>
-                        <p>
-                           Quản lý người dùng
-                        </p>
-                    </a>
-
-                </li> --}}
+                @auth
+                @if(auth()->user()->role === 'admin')
+                    <li class="nav-item">
+                        <a href="/accounts" class="nav-link">
+                            <i class="nav-icon fas fa-calendar-alt"></i>
+                            <p>Quản lý người dùng</p>
+                        </a>
+                    </li>
+                @endif
+            @endauth
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

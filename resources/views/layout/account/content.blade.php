@@ -31,7 +31,6 @@
                                 <table class="table table-hover text-nowrap">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Phone</th>
@@ -42,7 +41,6 @@
                                     <tbody>
                                         @foreach ($accounts as $account)
                                             <tr>
-                                                <td>{{ $account->id }}</td>
                                                 <td>{{ $account->name }}</td>
                                                 <td>{{ $account->email }}</td>
                                                 <td>{{ $account->phone }}</td>
@@ -75,7 +73,7 @@
 
                                 <div class="card-footer clearfix">
                                     <div class="float-right">
-                                        {{ $categories->links() }}
+                                        {{ $accounts->links() }}
                                     </div>
                                 </div>
                             </div>
@@ -119,7 +117,7 @@
                                     <option value="user">User</option>
                                 </select>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" id="passwordGroup">
                                 <label for="modalPassword">Password</label>
                                 <input type="password" name="password" id="modalPassword" class="form-control">
                             </div>
@@ -190,18 +188,22 @@
     const id = button.data('id');
 
     if (id) {
-        // Edit mode
+        // Edit mode: ẩn password
         modal.find('#modalName').val(button.data('name'));
         modal.find('#modalEmail').val(button.data('email'));
         modal.find('#modalPhone').val(button.data('phone'));
         modal.find('#modalRole').val(button.data('role'));
         modal.find('#editAccountForm').attr('action', `/accounts/update/${id}`);
         modal.find('input[name="_method"]').val('PUT');
+
+        modal.find('#passwordGroup').hide();
+        modal.find('#modalPassword').val('');
     } else {
-        // Add mode
+        // Add mode: hiện password
         modal.find('#editAccountForm')[0].reset();
         modal.find('#editAccountForm').attr('action', '/accounts/create');
         modal.find('input[name="_method"]').val('POST');
+        modal.find('#passwordGroup').show();
     }
 });
 

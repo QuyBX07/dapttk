@@ -95,10 +95,11 @@ Route::middleware(['auth:account'])->group(function () {
     Route::get('/revenue-by-category', [StatisticsController::class, 'revenueByCategory']);
 
     // Account routes
-    Route::get('/accounts', [AccountController::class, 'index']);
-    Route::post('/accounts/create', [AccountController::class, 'store']);
-    Route::put('/accounts/update/{id}', [AccountController::class, 'update']);
-    Route::delete('/accounts/delete/{id}', [AccountController::class, 'destroy']);
+    Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
+    Route::get('/accounts/search', [AccountController::class, 'search'])->name('accounts.search');
+    Route::post('/accounts/create', [AccountController::class, 'store'])->name('accounts.store');
+    Route::put('/accounts/update/{id}', [AccountController::class, 'update'])->name('accounts.update');
+    Route::delete('/accounts/delete/{id}', [AccountController::class, 'destroy'])->name('accounts.destroy');
 });
 
 // serach routes
