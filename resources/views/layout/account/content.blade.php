@@ -1,5 +1,5 @@
 @extends('welcome')
-@section('title', 'Danh mục')
+@section('title', 'Tài khoản')
 @section('content')
 <div class="content-wrapper">
     <div class="content-header">
@@ -8,7 +8,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Categories</h3>
+                            <h3 class="card-title">Accounts</h3>
 
                             <div class="card-tools">
                                 <form action="{{ url('/search/categories') }}" method="GET">
@@ -32,35 +32,40 @@
                                 <table class="table table-hover text-nowrap">
                                     <thead>
                                         <tr>
-                                            <th>Category ID</th>
                                             <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Role</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($categories as $category)
+                                        @foreach ($accounts as $account)
                                             <tr>
-                                                <td>{{ $category->category_id }}</td>
-                                                <td>{{ $category->name }}</td>
+                                                <td>{{ $account->name }}</td>
+                                                <td>{{ $account->email }}</td>
+                                                <td>{{ $account->phone }}</td>
+                                                <td>{{ $account->role }}</td>
                                                 <td>
                                                     <button type="button" class="btn btn-primary"
-                                                    data-toggle="modal"
-                                                    data-target="#modal-default"
-                                                    data-id="{{ $category->category_id }}"
-                                                    data-name="{{ $category->name }}">
-                                                    Edit
+                                                            data-toggle="modal"
+                                                            data-target="#modal-default"
+                                                            data-id="{{ $account->id }}"
+                                                            data-name="{{ $account->name }}"
+                                                            data-email="{{ $account->email }}"
+                                                            data-phone="{{ $account->phone }}"
+                                                            data-role="{{ $account->role }}">
+                                                        Edit
                                                     </button>
                                     
-                                                    <form action="{{ url('/categories/delete/' . $category->category_id) }}" method="POST" style="display:inline;">
+                                                    <form action="{{ url('/accounts/delete/' . $account->id) }}" method="POST" style="display:inline;">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger"
-                                                            onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?')">
+                                                                onclick="return confirm('Bạn có chắc chắn muốn xóa tài khoản này không?')">
                                                             Delete
                                                         </button>
                                                     </form>
-                                                    
-                                                    
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -69,7 +74,7 @@
 
                                 <div class="card-footer clearfix">
                                     <div class="float-right">
-                                        {{ $categories->links() }}
+                                        {{ $accounts->links() }}
                                     </div>
                                 </div>
                             </div>
@@ -90,15 +95,34 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="editCategoryForm" action="" method="POST">
+                        <form id="editAccountForm" action="" method="POST">
                             @csrf
                             <input type="hidden" name="_method" value="POST">
-
+                        
                             <div class="form-group">
-                                <label for="modalCategoryName">Name</label>
-                                <input type="text" name="name" id="modalCategoryName" class="form-control" required>
+                                <label for="modalName">Name</label>
+                                <input type="text" name="name" id="modalName" class="form-control" required>
                             </div>
-
+                            <div class="form-group">
+                                <label for="modalEmail">Email</label>
+                                <input type="email" name="email" id="modalEmail" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="modalPhone">Phone</label>
+                                <input type="text" name="phone" id="modalPhone" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="modalRole">Role</label>
+                                <select name="role" id="modalRole" class="form-control">
+                                    <option value="admin">Admin</option>
+                                    <option value="user">User</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="passwordGroup">
+                                <label for="modalPassword">Password</label>
+                                <input type="password" name="password" id="modalPassword" class="form-control">
+                            </div>
+                        
                             <div class="modal-footer justify-content-between">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                 <button type="submit" class="btn btn-primary">Save changes</button>
@@ -165,15 +189,22 @@
     const id = button.data('id');
 
     if (id) {
-        // Edit mode
-        modal.find('#modalCategoryName').val(button.data('name'));
-        modal.find('#editCategoryForm').attr('action', `/categories/update/${id}`);
+        // Edit mode: ẩn password
+        modal.find('#modalName').val(button.data('name'));
+        modal.find('#modalEmail').val(button.data('email'));
+        modal.find('#modalPhone').val(button.data('phone'));
+        modal.find('#modalRole').val(button.data('role'));
+        modal.find('#editAccountForm').attr('action', `/accounts/update/${id}`);
         modal.find('input[name="_method"]').val('PUT');
+
+        modal.find('#passwordGroup').hide();
+        modal.find('#modalPassword').val('');
     } else {
-        // Add mode
-        modal.find('#editCategoryForm')[0].reset();
-        modal.find('#editCategoryForm').attr('action', '/categories/create');
+        // Add mode: hiện password
+        modal.find('#editAccountForm')[0].reset();
+        modal.find('#editAccountForm').attr('action', '/accounts/create');
         modal.find('input[name="_method"]').val('POST');
+        modal.find('#passwordGroup').show();
     }
 });
 

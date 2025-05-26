@@ -1,4 +1,5 @@
 @extends('welcome')
+@section('title', 'Báo Cáo Thống Kê Kinh Doanh')
 @section('styles')
     <style>
         body {
@@ -54,6 +55,7 @@
             font-weight: bold;
             margin-bottom: 0.5rem;
         }
+
 
         .stat-label {
             font-size: 0.9rem;
@@ -353,9 +355,97 @@
                 </div>
             </div>
         </div>
+        <!-- Modal Chi Tiết Tháng -->
+        <div class="modal fade detail-modal" id="monthDetailModal" tabindex="-1" aria-labelledby="monthDetailModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="monthDetailModalLabel">
+                        <i class="fas fa-calendar-alt me-2"></i>Chi Tiết Báo Cáo Tháng
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Thống kê tháng -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="daily-stats">
+                                <h6>Doanh Thu Tháng</h6>
+                                <h4 id="monthRevenue"> VNĐ</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="daily-stats"
+                                style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
+                                <h6>Chi Phí Nhập Hàng</h6>
+                                <h4 id="monthPurchase"> VNĐ</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="daily-stats"
+                                style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                                <h6>Lợi Nhuận</h6>
+                                <h4 id="monthProfit"> VNĐ</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="daily-stats"
+                                style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                                <h6>Tỷ Suất Lợi Nhuận</h6>
+                                <h4 id="businessDays"></h4>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <!-- Biểu đồ tròn - Mặt hàng bán -->
+                        <div class="col-md-6">
+                            <div class="chart-section">
+                                <h6 class="text-primary mb-3">
+                                    <i class="fas fa-chart-pie me-2"></i>Cơ Cấu Doanh Thu Theo Mặt Hàng
+                                </h6>
+                                <div class="pie-chart-container">
+                                    <canvas id="salesPieChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Biểu đồ tròn - Mặt hàng nhập -->
+                        <div class="col-md-6">
+                            <div class="chart-section">
+                                <h6 class="text-success mb-3">
+                                    <i class="fas fa-chart-pie me-2"></i>Cơ Cấu Chi Phí Nhập Hàng
+                                </h6>
+                                <div class="pie-chart-container">
+                                    <canvas id="purchasePieChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Biểu đồ đường - Doanh thu theo ngày -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="chart-section">
+                                <h6 class="text-info mb-3">
+                                    <i class="fas fa-chart-line me-2"></i>Doanh Thu Theo Từng Ngày Trong Tháng
+                                </h6>
+                                <div class="line-chart-container">
+                                    <canvas id="dailyRevenueChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 @endsection
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let chartInstance = null;
 
@@ -437,13 +527,17 @@
                 const m = r === 0 ? 0 : ((p / r) * 100).toFixed(2);
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-            <td>Tháng ${i}</td>
-            <td>${formatCurrency(r)}</td>
-            <td>${formatCurrency(im)}</td>
-            <td>${formatCurrency(p)}</td>
-            <td>${m}%</td>
-            <td><button onclick="alert('Chi tiết tháng ${i}')">Chi tiết</button></td>
-        `;
+                <td>Tháng ${i}</td>
+                <td>${formatCurrency(r)}</td>
+                <td>${formatCurrency(im)}</td>
+                <td>${formatCurrency(p)}</td>
+                <td>${m}%</td>
+                <td>
+                    <button class="btn btn-sm btn-info month-detail-btn" onclick="showMonthDetail(${i})">
+                        <i class="fas fa-eye me-1"></i> Xem
+                    </button>
+                </td>
+                `;
                 tbody.appendChild(tr);
             }
         }
@@ -562,9 +656,6 @@
                     }
                 }
             });
-
-
-            // Tạo bảng chi tiết theo tháng
             const tbody = document.getElementById('summaryTableBody');
             tbody.innerHTML = "";
 
@@ -585,11 +676,258 @@
             `;
                 tbody.appendChild(tr);
             }
-
-
-            // tạo theo năm
-
-
         });
-    </script>
+
+
+        // Biến toàn cục để giữ biểu đồ nếu cần sau này
+let salesPieChart = null;
+
+// Hàm hiển thị chi tiết tháng
+function showMonthDetail(monthIndex) {
+    const yearSelect = document.getElementById('yearSelect');
+    const year = yearSelect ? yearSelect.value : new Date().getFullYear();
+    const revenue = parseFloat(monthlyRevenue[monthIndex] ?? 0);
+    const importCost = parseFloat(monthlyImport[monthIndex] ?? 0);
+    const profit = revenue - importCost;
+    const margin = revenue === 0 ? 0 : ((profit / revenue) * 100).toFixed(2);
+
+    document.getElementById('monthRevenue').textContent = formatCurrency(revenue);
+    document.getElementById('monthPurchase').textContent = formatCurrency(importCost);
+    document.getElementById('monthProfit').textContent = formatCurrency(profit);
+    document.getElementById('businessDays').textContent = `${margin}%`;
+
+    document.getElementById(
+          "monthDetailModalLabel"
+        ).innerHTML = `<i class="fas fa-calendar-alt me-2"></i>Chi Tiết Báo Cáo Tháng ${monthIndex}/${year}`;
+
+    const modalEl = document.getElementById('monthDetailModal');
+    modalEl.dataset.monthIndex = monthIndex
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show(); // chỉ show thôi, không thêm listener ở đây nữa
+}
+
+    function createSalesPieChart(productData) {
+    const ctx = document.getElementById('salesPieChart').getContext('2d');
+    const defaultColors = [
+        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+    ];
+
+    if (salesPieChart) {
+        salesPieChart.destroy();
+    }
+
+    salesPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: productData.labels,
+            datasets: [{
+                data: productData.data,
+                backgroundColor: productData.labels.map((_, i) => defaultColors[i % defaultColors.length]),
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+// Biến toàn cục để giữ biểu đồ nhập hàng nếu cần sau này
+let purchasePieChart;
+// Hàm tạo biểu đồ tròn cho chi phí nhập hàng
+function createPurchasePieChart(importData) {
+    const ctx = document.getElementById('purchasePieChart').getContext('2d');
+    const colors = ['#A569BD', '#5DADE2', '#58D68D', '#F5B041', '#EC7063', '#AF7AC5'];
+
+    if (purchasePieChart) {
+        purchasePieChart.destroy();
+    }
+
+    purchasePieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: importData.labels,
+            datasets: [{
+                data: importData.data,
+                backgroundColor: importData.labels.map((_, i) => colors[i % colors.length]),
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    
+    const modalEl = document.getElementById('monthDetailModal');
+
+    modalEl.addEventListener('shown.bs.modal', function () {
+        const monthIndex = parseInt(this.dataset.monthIndex, 10);
+        const yearSelect = document.getElementById('yearSelect');
+        const year = yearSelect ? yearSelect.value : new Date().getFullYear();
+
+        const apiMonth = monthIndex;
+        // Lấy dữ liệu doanh thu theo mặt hàng
+        fetch(`http://127.0.0.1:8000/api/revenue-by-category?month=${apiMonth}&year=${year}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Lỗi lấy dữ liệu từ API');
+                return response.json();
+            })
+            .then(data => {
+                console.log("📊 Dữ liệu từ API:", data);
+                createSalesPieChart(data);
+            })
+            .catch(error => {
+                console.error('❌ Lỗi khi tải dữ liệu biểu đồ:', error);
+            });
+        // Lấy dữ liệu chi phí nhập hàng
+        fetch(`http://127.0.0.1:8000/api/import-cost-by-category?month=${apiMonth}&year=${year}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Lỗi lấy dữ liệu chi phí nhập');
+                return response.json();
+            })
+            .then(data => {
+                console.log("📦 Dữ liệu chi phí nhập:", data);
+                createPurchasePieChart(data);
+            })
+            .catch(error => {
+                console.error('❌ Lỗi khi tải dữ liệu nhập hàng:', error);
+            });
+        
+        
+        // Lấy dữ liệu doanh thu theo ngày
+        fetch(`http://127.0.0.1:8000/api/daily-revenue?month=${apiMonth}&year=${year}`)
+            .then(res => {
+            if (!res.ok) throw new Error('Lỗi lấy dữ liệu');
+            return res.json();
+            })
+            .then(data => {
+                console.log("📦 Dữ liệu chi phí nhập:", data);
+            createDailyRevenueChart(data, monthIndex, year);
+            })
+            .catch(err => {
+            console.error(err);
+            alert('Không thể tải dữ liệu doanh thu theo ngày');
+            });
+    });
+});
+
+
+// xử lý doanh thu ngày
+let dailyChart = null;
+// Hàm tạo biểu đồ đường cho doanh thu theo ngày
+function createDailyRevenueChart(dailyData, monthIndex, year) {
+  const ctx = document.getElementById("dailyRevenueChart").getContext("2d");
+
+  if (dailyChart) {
+    dailyChart.destroy();
+  }
+
+  dailyChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: dailyData.labels,
+      datasets: [
+        {
+          label: "Doanh Thu Ngày",
+          data: dailyData.data,
+          borderColor: "rgba(54, 162, 235, 1)",
+          backgroundColor: "rgba(54, 162, 235, 0.1)",
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: "rgba(54, 162, 235, 1)",
+          pointBorderColor: "#fff",
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        intersect: false,
+        mode: "index",
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: `Doanh Thu Hàng Ngày - Tháng ${monthIndex}/${year}`,
+          font: {
+            size: 14,
+            weight: "bold",
+          },
+        },
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          callbacks: {
+            title: function (context) {
+              return `Ngày ${context[0].label}/${monthIndex}/${year}`;
+            },
+            label: function (context) {
+              return (
+                "Doanh thu: " +
+                context.parsed.y.toLocaleString("vi-VN") +
+                " triệu VNĐ"
+              );
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Ngày trong tháng",
+            font: {
+              weight: "bold",
+            },
+          },
+          grid: {
+            display: false,
+          },
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: "Doanh thu (Triệu VNĐ)",
+            font: {
+              weight: "bold",
+            },
+          },
+          ticks: {
+            callback: function (value) {
+              return value.toLocaleString("vi-VN");
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 @endsection

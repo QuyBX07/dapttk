@@ -1,4 +1,5 @@
 @extends('welcome')
+@section('title', 'Sản phẩm')
 @section('content')
     <div class="content-wrapper">
         <div class="content-header">
@@ -134,7 +135,7 @@
                                     <div class="form-group">
                                         <label for="modalCategoryId">Category</label>
                                         <select name="category_id" id="modalCategoryId" class="form-control" required>
-                                        @foreach ($categories as $category)
+                                        @foreach ($categorys as $category)
                                             <option value="{{ $category->category_id }}">{{ $category->name }}</option>
                                         @endforeach
                                     </select>

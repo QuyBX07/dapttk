@@ -7,12 +7,12 @@ use Illuminate\Http\JsonResponse;
 use App\Http\DTOs\Requests\ProductCreateData;
 use App\Http\Requests\ProductRequest;
 use App\Http\Requests\SearchRequest;
-
+use App\Http\Services\CategoryService;
 class ProductController extends Controller
 {
     protected ProductService $productService;
 
-    public function __construct(ProductService $productService)
+    public function __construct(ProductService $productService, protected CategoryService $categoryService)
     {
         $this->productService = $productService;
     }
@@ -27,9 +27,10 @@ class ProductController extends Controller
         //     'success' => true,
         //     'data' => $products
         // ]);
-
+        $categorys = $this->categoryService->getAll();
         return view('layout.product.content', [
-            'products' => $products
+            'products' => $products,
+            'categorys' => $categorys
         ]);
     }
 

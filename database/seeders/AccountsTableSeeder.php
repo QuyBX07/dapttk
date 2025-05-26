@@ -22,7 +22,7 @@ class AccountsTableSeeder extends Seeder
         DB::table('accounts')->insert([
             'id' => (string) Str::uuid(),
             'name' => 'John Doe',
-            'email' => 'john@example.com',
+            'email' => '6s',
             'password' => bcrypt('password'),
             'phone' => '987654321',
             'role' => 'user', // Vai trò là user

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Services\ImportService;
 use Illuminate\Http\Request;
 use App\Http\Services\ExportService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class StatisticsController extends Controller
 {
@@ -62,5 +64,50 @@ class StatisticsController extends Controller
             'monthlyRevenue' => $monthlyRevenue,
             'monthlyImport' => $monthlyImport,
         ]);
+    }
+
+    public function revenueByCategory(Request $request)
+    {
+        $month = $request->query('month');
+        $year = $request->query('year');
+
+        try {
+            $result = $this->exportService->revenueByCategory($month, $year);
+            return response()->json($result);
+        } catch (ValidationException $e) {
+            return response()->json(['error' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function importCostByCategory(Request $request)
+    {
+        $month = $request->query('month');
+        $year = $request->query('year');
+
+        try {
+            $result = $this->importService->importCostByCategory($month, $year);
+            return response()->json($result);
+        } catch (ValidationException $e) {
+            return response()->json(['error' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getDailyRevenue(Request $request)
+    {
+        $month = (int) $request->query('month', date('m'));
+        $year = (int) $request->query('year', date('Y'));
+
+        try {
+            $result = $this->exportService->getDailyRevenue($month, $year);
+            return response()->json($result);
+        } catch (ValidationException $e) {
+            return response()->json(['error' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

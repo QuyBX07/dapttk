@@ -1,4 +1,5 @@
 @extends('welcome')
+@section('title', 'Xuất hàng')
 @section('content')
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
@@ -132,14 +133,6 @@
                                         <!-- Trường ẩn để gửi account_id của người dùng hiện tại -->
                                         <input type="hidden" name="account_id" value="{{ Auth::user()->id }}">
                                     </div>
-
-
-                                <!-- Ghi chú -->
-                                {{-- <div class="form-group">
-                                    <label for="note">Note</label>
-                                    <textarea name="note" id="note" rows="3" class="form-control" placeholder="Enter note (optional)"></textarea>
-                                </div> --}}
-
                                 <hr>
                                 <h5>Products</h5>
 
@@ -165,7 +158,7 @@
                                         <div class="col-md-3">
                                             <label>Price</label>
                                             <input type="number" class="form-control price-input" name="details[0][price]"
-                                                min="0" step="0.01" required>
+                                                min="0" step="0.01" required readonly>
                                         </div>
                                         <div class="col-md-2">
                                             <label>Subtotal</label>
@@ -293,19 +286,13 @@
     <script>
 
 
-    $(document).ready(function() {
-        // Khi chọn sản phẩm thì tự động điền giá vào ô Price tương ứng
-        $(document).on('change', '.product-select', function () {
-            var selectedOption = $(this).find('option:selected');
-            var price = selectedOption.data('price');
+$(document).on('change', '.product-select', function () {
+    var selectedOption = $(this).find('option:selected');
+    var price = selectedOption.data('price');
 
-            // Tìm div .product-entry gần nhất (nếu có nhiều sản phẩm)
-            var parentEntry = $(this).closest('.product-entry');
-
-            // Gán giá vào input.price-input bên trong entry đó
-            parentEntry.find('.price-input').val(price);
-        });
-    });
+    var parentEntry = $(this).closest('.product-entry');
+    parentEntry.find('.price-input').val(price).trigger('input'); // ✅ gọi lại tính tiền
+});;
 
         $('.export-row').click(function() {
             const exportId = $(this).data('id');
@@ -377,11 +364,11 @@
 
                 const productHtml = `
              <div class="product-entry row mb-3">
-                <div class="col-md-5">
+                 <div class="col-md-5">
                     <select class="form-control select2 product-select" name="details[${productCounter}][product_id]" required>
                         <option value="">-- Select Product --</option>
                         @foreach ($products as $product)
-                            <option value="{{ $product->product_id }}">{{ $product->name }}</option>
+                            <option value="{{ $product->product_id }}" data-price="{{ $product->price }}">{{ $product->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -389,7 +376,7 @@
                     <input type="number" class="form-control quantity-input" name="details[${productCounter}][quantity]" min="1" value="1" required>
                 </div>
                 <div class="col-md-3">
-                    <input type="number" class="form-control price-input" name="details[${productCounter}][price]" min="0" step="0.01" required>
+                    <input type="number" class="form-control price-input" name="details[${productCounter}][price]" min="0" step="0.01" required readonly>
                 </div>
                 <div class="col-md-2 d-flex">
                     <input type="text" class="form-control subtotal" readonly>
@@ -405,31 +392,38 @@
                 $('#product-container .product-select').last().select2({
                     width: '100%'
                 });
-
-
                 bindProductEvents();
                 productCounter++;
             });
 
             function bindProductEvents() {
-                $('#product-container').off('click', '.remove-product').on('click', '.remove-product', function() {
-                    $(this).closest('.product-entry').remove();
-                    calculateTotal();
-                });
+    $('#product-container').off('click', '.remove-product').on('click', '.remove-product', function() {
+        $(this).closest('.product-entry').remove();
+        calculateTotal();
+    });
 
+    $('#product-container').off('input', '.quantity-input, .price-input')
+        .on('input', '.quantity-input, .price-input', function() {
+            const row = $(this).closest('.product-entry');
+            const quantity = parseFloat(row.find('.quantity-input').val()) || 0;
+            const price = parseFloat(row.find('.price-input').val()) || 0;
+            const subtotal = quantity * price;
 
-                $('#product-container').off('input', '.quantity-input, .price-input')
-                    .on('input', '.quantity-input, .price-input', function() {
-                        const row = $(this).closest('.product-entry');
-                        const quantity = parseFloat(row.find('.quantity-input').val()) || 0;
-                        const price = parseFloat(row.find('.price-input').val()) || 0;
-                        const subtotal = quantity * price;
+            row.find('.subtotal').val(formatCurrency(subtotal));
+            calculateTotal();
+        });
 
-                        row.find('.subtotal').val(formatCurrency(subtotal));
-                        calculateTotal();
-                    });
+    // Thêm đoạn này để xử lý khi chọn sản phẩm
+    $('#product-container').off('change', '.product-select')
+        .on('change', '.product-select', function () {
+            var selectedOption = $(this).find('option:selected');
+            var price = selectedOption.data('price');
 
-            }
+            var parentEntry = $(this).closest('.product-entry');
+            parentEntry.find('.price-input').val(price).trigger('input');
+        });
+}
+
 
             function calculateTotal() {
                 let total = 0;
@@ -451,40 +445,6 @@
             }
 
             bindProductEvents();
-
-            // Hiển thị chi tiết xuất hàng khi nhấn vào nút "View Detail"
-            // $('.export-row').on('click', function() {
-            //     const exportId = $(this).data('id');
-
-            //     $.get(`/exports/${exportId}`, function(data) {
-            //         $('#detail-export-id').text(data.export_id);
-            //         $('#detail-customer').text(data.customer.name);
-            //         $('#detail-total').text(parseFloat(data.total_amount).toFixed(2));
-            //         $('#detail-date').text(new Date(data.created_at)
-            //     .toLocaleString()); // Hiển thị thời gian tạo
-            //         $('#detail-note').text(data.note ?? 'Không có ghi chú');
-            //         $('#detail-account').text(data.account.name); // Người tạo
-
-            //         // Clear sản phẩm cũ
-            //         $('#detail-products').empty();
-
-            //         // Thêm từng sản phẩm vào bảng
-            //         data.export_details.forEach(function(detail) {
-            //             $('#detail-products').append(`
-            //     <tr>
-            //         <td>${detail.product.name}</td>
-            //         <td>${detail.quantity}</td>
-            //         <td>${detail.price}</td>
-            //         <td>${(detail.quantity * parseFloat(detail.price)).toFixed(2)}</td>
-            //     </tr>
-            // `);
-            //         });
-
-            //         $('#modal-export-detail').modal('show');
-            //     });
-            // });
-
-
         });
     </script>
 @endsection

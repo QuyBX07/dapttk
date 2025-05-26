@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\AccountController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -67,12 +68,14 @@ Route::middleware(['auth:account'])->group(function () {
     Route::delete('/categories/delete/{id}', [CategoryController::class, 'destroy'])->name('categories.delete');
 
     // Routes for managing exports
+    Route::get('/exports/search', [ExportController::class, 'search']);
+    Route::get('/exports/remove', [ExportController::class, 'removeIndex']);
     Route::get('/exports', [ExportController::class, 'index']);
     Route::post('/exports/create', [ExportController::class, 'store']);
     Route::get('/exports/{id}', [ExportController::class, 'show']);
     Route::delete('/exports/delete/{id}', [ExportController::class, 'destroy']);
     Route::get('/exports/detail/{id}', [ExportController::class, 'detail']);
-    Route::get('/exports/search', [ExportController::class, 'search']);
+
 
     // Supplier routes
     Route::get('/suppliers', [SupplierController::class, 'getAll']);
@@ -88,14 +91,16 @@ Route::middleware(['auth:account'])->group(function () {
     // Statistics routes
 
     Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
-
-
     Route::get('/statistics/data', [StatisticsController::class, 'getStatistics'])->name('statistics.data');
+    Route::get('/revenue-by-category', [StatisticsController::class, 'revenueByCategory']);
+
+    // Account routes
+    Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
+    Route::get('/accounts/search', [AccountController::class, 'search'])->name('accounts.search');
+    Route::post('/accounts/create', [AccountController::class, 'store'])->name('accounts.store');
+    Route::put('/accounts/update/{id}', [AccountController::class, 'update'])->name('accounts.update');
+    Route::delete('/accounts/delete/{id}', [AccountController::class, 'destroy'])->name('accounts.destroy');
 });
-
-
-
-
 
 // serach routes
 // Route::post('/search/products',[ProductController::class,'search']);

@@ -21,7 +21,7 @@ class ExportController extends Controller
     }
 
 
-// Thống kê doanh thu
+    // Thống kê doanh thu
     public function getTotalRevenueByYear(Request $request)
     {
         $year = $request->input('year', now()->year); // Mặc định là năm hiện tại nếu không truyền
@@ -53,92 +53,38 @@ class ExportController extends Controller
     // Hiển thị danh sách đơn xuất
     public function index()
     {
-        $exports = Export::with(['customer', 'account'])->paginate(10);
+        $exports = Export::with(['customer', 'account'])
+            ->where('is_delete', 0)
+            ->paginate(10);
+
         $products = Product::all();
         $customers = Customer::all();
 
         return view('layout.export.content', compact('exports', 'products', 'customers'));
     }
 
+
     public function show($id)
     {
-        $export = Export::with(['customer', 'account', 'details.product'])->findOrFail($id);
-
-        return response()->json([
-            'export_id' => $export->export_id,
-            'customer' => $export->customer->name,
-            'account' => $export->account->name,
-            'total_amount' => $export->total_amount,
-            'created_at' => $export->created_at->format('Y-m-d H:i:s'),
-            'products' => $export->details->map(function ($detail) {
-                return [
-                    'name' => $detail->product->name,
-                    'quantity' => $detail->quantity,
-                    'price' => $detail->price,
-                    'subtotal' => $detail->quantity * $detail->price,
-                ];
-            })
-        ]);
+        return response()->json($this->exportService->getExportDetails($id));
     }
+
+    // Hiển thị chi tiết đơn xuất
 
     public function detail($id)
     {
-        $export = Export::with(['customer', 'account'])->find($id);
-        $details = ExportDetail::with('product')->where('export_id', $id)->get();
+        $data = $this->exportService->getExportWithDetails($id);
 
-        if (!$export) {
+        if (!$data) {
             return response()->json(['error' => 'Export not found'], 404);
         }
 
-        return response()->json([
-            'export' => $export,
-            'details' => $details
-        ]);
+        return response()->json($data);
     }
-
-
-
-    // // Cập nhật đơn xuất
-    // public function update(Request $request, $id)
-    // {
-    //     DB::beginTransaction();
-
-    //     try {
-    //         $export = Export::findOrFail($id);
-
-    //         $export->update([
-    //             'customer_id'   => $request->customer_id,
-    //             'note'          => $request->note,
-    //             'total_amount'  => $request->total_amount,
-    //         ]);
-
-    //         // Xóa chi tiết cũ
-    //         ExportDetail::where('export_id', $id)->delete();
-
-    //         // Lưu chi tiết mới
-    //         foreach ($request->details as $detail) {
-    //             ExportDetail::create([
-    //                 'export_id' => $id,
-    //                 'product_id' => $detail['product_id'],
-    //                 'quantity' => $detail['quantity'],
-    //                 'price' => $detail['price'],
-    //             ]);
-    //         }
-
-    //         DB::commit();
-
-    //         return redirect('/exports')->with('success', 'Cập nhật đơn xuất thành công.');
-    //     } catch (\Exception $e) {
-    //         DB::rollback();
-    //         return back()->with('error', 'Lỗi: ' . $e->getMessage());
-    //     }
-    // }
-
     // Xóa đơn xuất
     public function destroy($id)
     {
-        $export = Export::where('export_id', $id)->firstOrFail();
-        $export->delete();
+        $this->exportService->softDeleteExport($id);
 
         return redirect('/exports')->with('success', 'Xóa đơn xuất thành công.');
     }
@@ -153,8 +99,6 @@ class ExportController extends Controller
             'details.*.price' => 'required|numeric|min:0',
             'account_id' => 'required|uuid|exists:accounts,id',  // Kiểm tra account_id hợp lệ và tồn tại
         ]);
-
-
 
         // Tính tổng tiền
         $totalAmount = array_reduce($request->details, function ($carry, $item) {
@@ -171,8 +115,9 @@ class ExportController extends Controller
             'is_delete' => 0, // Thiết lập mặc định is_delete là 0 (chưa xóa)
         ]);
 
-        // Tạo chi tiết phiếu xuất
+        // Tạo chi tiết phiếu xuất và trừ số lượng sản phẩm
         foreach ($request->details as $detail) {
+            // Tạo chi tiết phiếu xuất
             ExportDetail::create([
                 'exportdetail_id' => Str::uuid(), // Tạo UUID cho khóa chính
                 'export_id' => $export->export_id,
@@ -180,25 +125,54 @@ class ExportController extends Controller
                 'quantity' => $detail['quantity'],
                 'price' => $detail['price'],
             ]);
+
+            // Cập nhật tồn kho sản phẩm
+            $product = Product::findOrFail($detail['product_id']);
+
+            // Kiểm tra nếu số lượng tồn kho còn đủ để xuất
+            if ($product->quantity < $detail['quantity']) {
+                return back()->with('error', 'Sản phẩm "' . $product->name . '" không đủ số lượng tồn kho.');
+            }
+
+            // Trừ số lượng sản phẩm trong kho
+            $product->quantity -= $detail['quantity'];
+            $product->save();
         }
 
-        return redirect()->back()->with('success', 'Thêm phiếu xuất thành công.');
+        return redirect('/exports')->with('success', 'Tạo phiếu xuất thành công.');
     }
+
 
     public function search(Request $request)
     {
         $query = $request->input('query');
 
         $exports = Export::with(['customer', 'account'])
-            ->whereHas('customer', function ($q) use ($query) {
-                $q->where('name', 'like', "%$query%");
+            ->where(function ($q) use ($query) {
+                $q->whereHas('customer', function ($q2) use ($query) {
+                    $q2->where('name', 'like', "%$query%");
+                })->orWhereHas('account', function ($q2) use ($query) {
+                    $q2->where('name', 'like', "%$query%");
+                });
             })
-            ->orWhereHas('account', function ($q) use ($query) {
-                $q->where('name', 'like', "%$query%");
-            })
-            ->where('is_delete', 0) // nếu bạn có soft delete
+            ->where('is_delete', 0)
             ->paginate(10);
 
-        return view('layout.export.content', compact('exports'));
+        $products = Product::all();
+        $customers = Customer::all();
+
+        return view('layout.export.content', compact('exports', 'products', 'customers'));
+    }
+
+    public function removeIndex()
+    {
+        $exports = Export::with(['customer', 'account'])
+            ->where('is_delete', 1)
+            ->paginate(10);
+
+        $products = Product::all();
+        $customers = Customer::all();
+
+        return view('layout.export.viewDelete', compact('exports', 'products', 'customers'));
     }
 }

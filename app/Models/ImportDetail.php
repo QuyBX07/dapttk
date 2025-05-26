@@ -9,8 +9,6 @@ class ImportDetail extends Model
 {
     use HasFactory;
 
-
-    
     protected $primaryKey = 'importdetail_id';
     public $incrementing = false; // Sử dụng UUID
     protected $keyType = 'string'; // UUID là kiểu string

@@ -17,11 +17,11 @@ class CustomerController extends Controller
         $this->customerService = $customerService;
     }
 
-// lấy danh sách khách hàng
+    // lấy danh sách khách hàng
     public function getAll()
     {
         $customers = $this->customerService->getAll();
-    
+
         return view('layout.customer.content', [
             'customers' => $customers
         ]);
@@ -32,7 +32,7 @@ class CustomerController extends Controller
         // ]);
     }
 
-// lấy chi tiết khách hàng
+    // lấy chi tiết khách hàng
     public function getDetail(string $id): JsonResponse
     {
         $customer = $this->customerService->getDetail($id);
@@ -90,7 +90,6 @@ class CustomerController extends Controller
         //     'message' => $deleted ? 'Xóa khách hàng thành công.' : 'Không thể xóa khách hàng.'
         // ]);
         return redirect()->back()->with('success', 'Xóa khách hàng thành công!');
-
     }
 
 

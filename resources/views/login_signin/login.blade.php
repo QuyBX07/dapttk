@@ -17,11 +17,11 @@
         <div class="right-panel">
             <div class="box-login">
                 <h1>Đăng nhập</h1>
-                @if ($errors->any())
+                {{-- @if ($errors->any())
                     <div class="alert alert-danger">
                     {{ $errors->first() }}
                 </div>
-                @endif
+                @endif --}}
 
                 <form class="login-form" action="{{ route('login') }}" method="POST">
                     @csrf
@@ -47,5 +47,20 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: "{{ session('error') }}",
+                showConfirmButton: true,
+                position: 'center'
+            });
+        @endif
+    });
+</script>
 </body>
 </html>

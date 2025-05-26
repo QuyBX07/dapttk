@@ -1,4 +1,5 @@
 @extends('welcome') 
+@section('title', 'Nhà cung cấp')
 @section('content')
     <div class="content-wrapper">
         <div class="content-header">
