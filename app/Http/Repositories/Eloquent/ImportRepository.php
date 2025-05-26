@@ -116,7 +116,7 @@ class ImportRepository implements ImportRepoInterface
             ->sum('total_amount');
     }
 
-    public function importCostByCategory(?int $month)
+    public function importCostByCategory(?int $month, ?int $year)
     {
         return DB::table('import_details')
             ->join('products', 'import_details.product_id', '=', 'products.product_id')
@@ -124,6 +124,9 @@ class ImportRepository implements ImportRepoInterface
             ->selectRaw('categories.name as label, SUM(import_details.price * import_details.quantity) as total')
             ->when($month, function ($query, $month) {
                 return $query->whereMonth('import_details.created_at', $month);
+            })
+            ->when($year, function ($query, $year) {
+                return $query->whereYear('import_details.created_at', $year);
             })
             ->groupBy('categories.name')
             ->get();

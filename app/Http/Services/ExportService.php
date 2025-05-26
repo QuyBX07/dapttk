@@ -57,13 +57,17 @@ class ExportService
         return $this->exportRepo->softDelete($id);
     }
 
-    public function revenueByCategory($month)
+    public function revenueByCategory($month, $year)
     {
         if (!is_numeric($month) || $month < 1 || $month > 12) {
             throw ValidationException::withMessages(['month' => 'Tháng không hợp lệ']);
         }
 
-        $results = $this->exportRepo->revenueByCategory($month);
+        if (!is_numeric($year) || $year < 2000 || $year > (int)date('Y') + 1) {
+            throw ValidationException::withMessages(['year' => 'Năm không hợp lệ']);
+        }
+
+        $results = $this->exportRepo->revenueByCategory($month, $year);
 
         $labels = $results->pluck('category_name')->toArray();
         $data = $results->pluck('total_revenue')->map(fn($val) => (float)$val)->toArray();

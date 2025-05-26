@@ -683,6 +683,8 @@ let salesPieChart = null;
 
 // Hàm hiển thị chi tiết tháng
 function showMonthDetail(monthIndex) {
+    const yearSelect = document.getElementById('yearSelect');
+    const year = yearSelect ? yearSelect.value : new Date().getFullYear();
     const revenue = parseFloat(monthlyRevenue[monthIndex] ?? 0);
     const importCost = parseFloat(monthlyImport[monthIndex] ?? 0);
     const profit = revenue - importCost;
@@ -695,7 +697,7 @@ function showMonthDetail(monthIndex) {
 
     document.getElementById(
           "monthDetailModalLabel"
-        ).innerHTML = `<i class="fas fa-calendar-alt me-2"></i>Chi Tiết Báo Cáo Tháng ${month}/${year}`;
+        ).innerHTML = `<i class="fas fa-calendar-alt me-2"></i>Chi Tiết Báo Cáo Tháng ${monthIndex}/${year}`;
 
     const modalEl = document.getElementById('monthDetailModal');
     modalEl.dataset.monthIndex = monthIndex
@@ -770,16 +772,17 @@ function createPurchasePieChart(importData) {
 
 
 document.addEventListener('DOMContentLoaded', function () {
+    
     const modalEl = document.getElementById('monthDetailModal');
 
     modalEl.addEventListener('shown.bs.modal', function () {
         const monthIndex = parseInt(this.dataset.monthIndex, 10);
-        console.log("✅ Modal đã hiển thị");
-        console.log("📅 Tháng được chọn:", monthIndex);
+        const yearSelect = document.getElementById('yearSelect');
+        const year = yearSelect ? yearSelect.value : new Date().getFullYear();
 
         const apiMonth = monthIndex;
         // Lấy dữ liệu doanh thu theo mặt hàng
-        fetch(`http://127.0.0.1:8000/api/revenue-by-category?month=${apiMonth}`)
+        fetch(`http://127.0.0.1:8000/api/revenue-by-category?month=${apiMonth}&year=${year}`)
             .then(response => {
                 if (!response.ok) throw new Error('Lỗi lấy dữ liệu từ API');
                 return response.json();
@@ -792,7 +795,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('❌ Lỗi khi tải dữ liệu biểu đồ:', error);
             });
         // Lấy dữ liệu chi phí nhập hàng
-        fetch(`http://127.0.0.1:8000/api/import-cost-by-category?month=${apiMonth}`)
+        fetch(`http://127.0.0.1:8000/api/import-cost-by-category?month=${apiMonth}&year=${year}`)
             .then(response => {
                 if (!response.ok) throw new Error('Lỗi lấy dữ liệu chi phí nhập');
                 return response.json();
@@ -807,14 +810,14 @@ document.addEventListener('DOMContentLoaded', function () {
         
         
         // Lấy dữ liệu doanh thu theo ngày
-        fetch(`http://127.0.0.1:8000/api/daily-revenue?month=${month}&year=${year}`)
+        fetch(`http://127.0.0.1:8000/api/daily-revenue?month=${apiMonth}&year=${year}`)
             .then(res => {
             if (!res.ok) throw new Error('Lỗi lấy dữ liệu');
             return res.json();
             })
             .then(data => {
                 console.log("📦 Dữ liệu chi phí nhập:", data);
-            createDailyRevenueChart(data, month, year);
+            createDailyRevenueChart(data, monthIndex, year);
             })
             .catch(err => {
             console.error(err);
@@ -827,7 +830,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // xử lý doanh thu ngày
 let dailyChart = null;
 // Hàm tạo biểu đồ đường cho doanh thu theo ngày
-function createDailyRevenueChart(dailyData, month, year) {
+function createDailyRevenueChart(dailyData, monthIndex, year) {
   const ctx = document.getElementById("dailyRevenueChart").getContext("2d");
 
   if (dailyChart) {
@@ -865,7 +868,7 @@ function createDailyRevenueChart(dailyData, month, year) {
       plugins: {
         title: {
           display: true,
-          text: `Doanh Thu Hàng Ngày - Tháng ${month}/${year}`,
+          text: `Doanh Thu Hàng Ngày - Tháng ${monthIndex}/${year}`,
           font: {
             size: 14,
             weight: "bold",
@@ -877,7 +880,7 @@ function createDailyRevenueChart(dailyData, month, year) {
         tooltip: {
           callbacks: {
             title: function (context) {
-              return `Ngày ${context[0].label}/${month}/${year}`;
+              return `Ngày ${context[0].label}/${monthIndex}/${year}`;
             },
             label: function (context) {
               return (
@@ -922,21 +925,7 @@ function createDailyRevenueChart(dailyData, month, year) {
   });
 }
 
-// Hàm hiển thị chi tiết ngày
-function fetchAndShowDailyRevenueChart(month, year) {
-  fetch(`http://127.0.0.1:8000/api/daily-revenue?month=${month}&year=${year}`)
-    .then(res => {
-      if (!res.ok) throw new Error('Lỗi lấy dữ liệu');
-      return res.json();
-    })
-    .then(data => {
-      createDailyRevenueChart(data, month, year);
-    })
-    .catch(err => {
-      console.error(err);
-      alert('Không thể tải dữ liệu doanh thu theo ngày');
-    });
-}
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 

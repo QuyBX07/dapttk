@@ -28,5 +28,5 @@ interface ImportRepoInterface extends BaseRepositoryInterface,
     public function getTotalImportCostByYear($year);
     public function getTotalImportByMonth($year, $month); // tông doanh thu theo tháng
 
-    public function importCostByCategory(?int $month);
+    public function importCostByCategory(?int $month, ?int $year);
 }

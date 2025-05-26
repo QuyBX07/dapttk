@@ -19,7 +19,7 @@ interface ExportRepoInterface extends ExportStatisticsRepositoryInterface
 
     public function createExport(array $exportData, array $details);
 
-    public function revenueByCategory(int $month);
+    public function revenueByCategory(int $month, int $year);
 
     public function getDailyRevenue(int $month, int $year);
 }

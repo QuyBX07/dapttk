@@ -68,13 +68,13 @@ Route::middleware(['auth:account'])->group(function () {
     Route::delete('/categories/delete/{id}', [CategoryController::class, 'destroy'])->name('categories.delete');
 
     // Routes for managing exports
+    Route::get('/exports/search', [ExportController::class, 'search']);
     Route::get('/exports/remove', [ExportController::class, 'removeIndex']);
     Route::get('/exports', [ExportController::class, 'index']);
     Route::post('/exports/create', [ExportController::class, 'store']);
     Route::get('/exports/{id}', [ExportController::class, 'show']);
     Route::delete('/exports/delete/{id}', [ExportController::class, 'destroy']);
     Route::get('/exports/detail/{id}', [ExportController::class, 'detail']);
-    Route::get('/exports/search', [ExportController::class, 'search']);
 
 
     // Supplier routes

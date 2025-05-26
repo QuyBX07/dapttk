@@ -105,7 +105,7 @@ class ExportRepository implements ExportRepoInterface
         });
     }
 
-    public function revenueByCategory(int $month)
+    public function revenueByCategory(int $month, int $year)
     {
         return DB::table('export_details')
             ->join('products', 'export_details.product_id', '=', 'products.product_id')
@@ -116,6 +116,7 @@ class ExportRepository implements ExportRepoInterface
                 DB::raw('SUM(export_details.quantity * export_details.price) as total_revenue')
             )
             ->whereMonth('exports.created_at', $month)
+            ->whereYear('exports.created_at', $year)  // thêm điều kiện năm ở đây
             ->groupBy('categories.name')
             ->get();
     }

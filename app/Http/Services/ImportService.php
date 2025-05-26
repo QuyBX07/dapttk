@@ -62,13 +62,17 @@ class ImportService
         return $this->importRepo->getTotalImportByMonth($year, $month);
     }
 
-    public function importCostByCategory(?int $month)
+    public function importCostByCategory(?int $month, ?int $year)
     {
         if ($month !== null && (!is_numeric($month) || $month < 1 || $month > 12)) {
             throw ValidationException::withMessages(['month' => 'Tháng không hợp lệ']);
         }
 
-        $results = $this->importRepo->importCostByCategory($month);
+        if ($year !== null && (!is_numeric($year) || $year < 2000 || $year > (int)date('Y') + 1)) {
+            throw ValidationException::withMessages(['year' => 'Năm không hợp lệ']);
+        }
+
+        $results = $this->importRepo->importCostByCategory($month, $year);
 
         $labels = $results->pluck('label')->toArray();
         $data = $results->pluck('total')->map(fn($val) => (float)$val)->toArray();

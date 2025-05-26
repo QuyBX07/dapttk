@@ -69,9 +69,10 @@ class StatisticsController extends Controller
     public function revenueByCategory(Request $request)
     {
         $month = $request->query('month');
+        $year = $request->query('year');
 
         try {
-            $result = $this->exportService->revenueByCategory($month);
+            $result = $this->exportService->revenueByCategory($month, $year);
             return response()->json($result);
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], 422);
@@ -82,10 +83,11 @@ class StatisticsController extends Controller
 
     public function importCostByCategory(Request $request)
     {
-        $month = $request->input('month');
+        $month = $request->query('month');
+        $year = $request->query('year');
 
         try {
-            $result = $this->importService->importCostByCategory($month);
+            $result = $this->importService->importCostByCategory($month, $year);
             return response()->json($result);
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], 422);

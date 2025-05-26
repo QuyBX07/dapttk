@@ -148,16 +148,20 @@ class ExportController extends Controller
         $query = $request->input('query');
 
         $exports = Export::with(['customer', 'account'])
-            ->whereHas('customer', function ($q) use ($query) {
-                $q->where('name', 'like', "%$query%");
+            ->where(function ($q) use ($query) {
+                $q->whereHas('customer', function ($q2) use ($query) {
+                    $q2->where('name', 'like', "%$query%");
+                })->orWhereHas('account', function ($q2) use ($query) {
+                    $q2->where('name', 'like', "%$query%");
+                });
             })
-            ->orWhereHas('account', function ($q) use ($query) {
-                $q->where('name', 'like', "%$query%");
-            })
-            ->where('is_delete', 0) // nếu bạn có soft delete
+            ->where('is_delete', 0)
             ->paginate(10);
 
-        return view('layout.export.content', compact('exports'));
+        $products = Product::all();
+        $customers = Customer::all();
+
+        return view('layout.export.content', compact('exports', 'products', 'customers'));
     }
 
     public function removeIndex()
