@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\StatisticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,8 +37,13 @@ Route::delete('/customers/delete/{id}', [CustomerController::class, 'delete']);
 //import routes
 Route::post('/imports/create', [ImportController::class, 'create']);
 Route::delete('/imports/delete/{id}', [ImportController::class, 'delete']);
+Route::get('/imports', [ImportController::class, 'getAll']);
 
 
 // search routes
-Route::post('/search/products',[ProductController::class,'search']);
-Route::post('/search/customers',[CustomerController::class,'search']);
+Route::post('/search/products', [ProductController::class, 'search']);
+Route::post('/search/customers', [CustomerController::class, 'search']);
+
+Route::get('/revenue-by-category', [StatisticsController::class, 'revenueByCategory']);
+Route::get('/import-cost-by-category', [StatisticsController::class, 'importCostByCategory']);
+Route::get('/daily-revenue', [StatisticsController::class, 'getDailyRevenue']);

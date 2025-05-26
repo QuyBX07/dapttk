@@ -1,15 +1,15 @@
 <?php
 namespace App\Http\Repositories\Eloquent;
-use App\Http\Repositories\Interfaces\BaseRepositoryInterface;
+use App\Http\Repositories\Interfaces\CustomerRepoInterface;
 use App\Models\Customer;
-use App\Http\Repositories\Interfaces\SearchRepositoryInterface;
 use Illuminate\Support\Collection;
-class CustomerRepository implements BaseRepositoryInterface, SearchRepositoryInterface
+class CustomerRepository implements CustomerRepoInterface
 {
     public function findAll()
     {
-        return Customer::paginate(2);
+        return Customer::orderBy('updated_at', 'desc')->paginate(20);
     }
+    
 
     public function find(string $id)
     {
@@ -37,6 +37,7 @@ class CustomerRepository implements BaseRepositoryInterface, SearchRepositoryInt
             ->orWhere('phone', 'LIKE', "%{$query}%")
             ->orWhere('email', 'LIKE', "%{$query}%")
             ->orWhere('address', 'LIKE', "%{$query}%")
-            ->paginate(2);
+            ->orderBy('updated_at', 'desc')
+            ->paginate(20);
     }
 }

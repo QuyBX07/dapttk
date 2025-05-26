@@ -35,16 +35,32 @@ class ProductRequest extends FormRequest
      * Định nghĩa thông báo lỗi tùy chỉnh nếu có.
      */
     public function messages(): array
-    {
-        return [
-            'name.required'        => 'Tên sản phẩm là bắt buộc.',
-            'category_id.required' => 'Danh mục là bắt buộc.',
-            'category_id.uuid'     => 'Danh mục không hợp lệ.',
-            'category_id.exists'   => 'Danh mục không tồn tại.',
-            'unit.required'        => 'Đơn vị tính là bắt buộc.',
-            'price.required'       => 'Giá sản phẩm là bắt buộc.',
-            'price.numeric'        => 'Giá phải là số.',
+{
+    return [
+        'name.required'        => 'Tên sản phẩm là bắt buộc.',
+        'name.string'          => 'Tên sản phẩm phải là chuỗi.',
+        'name.max'             => 'Tên sản phẩm không được vượt quá 255 ký tự.',
 
-        ];
-    }
+        'category_id.required' => 'Danh mục là bắt buộc.',
+        'category_id.exists'   => 'Danh mục không tồn tại.',
+
+        'description.string'   => 'Mô tả phải là chuỗi.',
+
+        'unit.required'        => 'Đơn vị tính là bắt buộc.',
+        'unit.string'          => 'Đơn vị tính phải là chuỗi.',
+        'unit.max'             => 'Đơn vị tính không được vượt quá 1000 ký tự.',
+
+        'quantity.required'    => 'Số lượng là bắt buộc.',
+        'quantity.integer'     => 'Số lượng phải là số nguyên.',
+        'quantity.min'         => 'Số lượng không được nhỏ hơn 0.',
+
+        'image.image'          => 'Tệp tải lên phải là ảnh.',
+        'image.mimes'          => 'Ảnh phải có định dạng: jpg, jpeg, png, gif.',
+
+        'price.required'       => 'Giá sản phẩm là bắt buộc.',
+        'price.numeric'        => 'Giá phải là số.',
+        'price.min'            => 'Giá không được nhỏ hơn 0.',
+    ];
+}
+
 }

@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('address')->nullable();
+            $table->boolean('is_deleted')->default(false); // xóa mềm
             $table->timestamps(); // created_at & updated_at
         });
     }

@@ -17,22 +17,22 @@ class CustomerController extends Controller
         $this->customerService = $customerService;
     }
 
-    /**
-     * Get all customers.
-     */
-    public function getAll(): JsonResponse
+    // lấy danh sách khách hàng
+    public function getAll()
     {
         $customers = $this->customerService->getAll();
 
-        return response()->json([
-            'success' => true,
-            'data'    => $customers,
+        return view('layout.customer.content', [
+            'customers' => $customers
         ]);
+
+        // return response()->json([
+        //     'success' => true,
+        //     'data'    => $customers,
+        // ]);
     }
 
-    /**
-     * Get customer details by ID.
-     */
+    // lấy chi tiết khách hàng
     public function getDetail(string $id): JsonResponse
     {
         $customer = $this->customerService->getDetail($id);
@@ -46,60 +46,67 @@ class CustomerController extends Controller
     /**
      * Create a new customer.
      */
-    public function create(CustomerRequest $request): JsonResponse
+    public function create(CustomerRequest $request)
     {
         $validatedData = $request->validated();
         $dto = CustomerCreateData::fromArray($validatedData);
 
         $customer = $this->customerService->create($dto);
 
-        return response()->json([
-            'success' => true,
-            'data'    => $customer,
-        ], 201);
+        // return response()->json([
+        //     'success' => true,
+        //     'data'    => $customer,
+        // ], 201);
+
+        return redirect()->back()->with('success', 'Thêm khách hàng thành công!');
     }
 
     /**
      * Update an existing customer.
      */
-    public function update(CustomerRequest $request, string $id): JsonResponse
+    public function update(CustomerRequest $request, string $id)
     {
         $validatedData = $request->validated();
         $dto = CustomerCreateData::fromArray($validatedData);
 
         $updated = $this->customerService->update($id, $dto);
 
-        return response()->json([
-            'success' => true,
-            'message' => $updated ? 'Cập nhật khách hàng thành công.' : 'Không thể cập nhật khách hàng.'
-        ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => $updated ? 'Cập nhật khách hàng thành công.' : 'Không thể cập nhật khách hàng.'
+        // ]);
+        return redirect()->back()->with('success', 'Cập nhật khách hàng thành công!');
     }
 
     /**
      * Delete a customer by ID.
      */
-    public function delete(string $id): JsonResponse
+    public function delete(string $id)
     {
         $deleted = $this->customerService->delete($id);
 
-        return response()->json([
-            'success' => $deleted,
-            'message' => $deleted ? 'Xóa khách hàng thành công.' : 'Không thể xóa khách hàng.'
-        ]);
+        // return response()->json([
+        //     'success' => $deleted,
+        //     'message' => $deleted ? 'Xóa khách hàng thành công.' : 'Không thể xóa khách hàng.'
+        // ]);
+        return redirect()->back()->with('success', 'Xóa khách hàng thành công!');
     }
 
 
     /**
      * Search customers by query.
      */
-    public function search(SearchRequest $request): JsonResponse
+    public function search(SearchRequest $request)
     {
-        $query = $request->input('query');
+        $query = $request->query('query');
         $customers = $this->customerService->search($query);
 
-        return response()->json([
-            'success' => true,
-            'data'    => $customers,
+        // return response()->json([
+        //     'success' => true,
+        //     'data'    => $customers,
+        // ]);
+        return view('layout.customer.content', [
+            'customers' => $customers
         ]);
     }
 }
