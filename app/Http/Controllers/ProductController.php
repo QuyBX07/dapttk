@@ -27,6 +27,7 @@ class ProductController extends Controller
         //     'success' => true,
         //     'data' => $products
         // ]);
+
         return view('layout.product.content', [
             'products' => $products
         ]);

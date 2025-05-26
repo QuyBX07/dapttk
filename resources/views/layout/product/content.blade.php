@@ -133,14 +133,14 @@
 
                                     <div class="form-group">
                                         <label for="modalCategoryId">Category</label>
-                                        {{-- <select name="category_id" id="modalCategoryId" class="form-control" required>
+                                        <select name="category_id" id="modalCategoryId" class="form-control" required>
                                         @foreach ($categories as $category)
                                             <option value="{{ $category->category_id }}">{{ $category->name }}</option>
                                         @endforeach
-                                    </select> --}}
-                                        <select name="category_id" id="modalCategoryId" class="form-control" required>
+                                    </select>
+                                        {{-- <select name="category_id" id="modalCategoryId" class="form-control" required>
                                             <option value="22969832-49b8-3219-95b8-700a469d5d45">ut</option>
-                                        </select>
+                                        </select> --}}
 
                                     </div>
 
