@@ -24,7 +24,7 @@
                                 </form>
                                 <button class="btn btn-primary" style="margin-top: 10px;"
                                     data-toggle="modal" data-target="#modal-default" id="addCategoryButton">
-                                    Add Category
+                                    Thêm nhân viên
                                 </button>
                             </div>
 

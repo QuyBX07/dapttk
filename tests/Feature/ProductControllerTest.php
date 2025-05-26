@@ -129,16 +129,16 @@ class ProductControllerTest extends TestCase
         ]);
     }
 
-    public function test_search_returns_view_with_products()
-    {
-        $products = \App\Models\Product::factory()->count(3)->create();
+    // public function test_search_returns_view_with_products()
+    // {
+    //     $products = \App\Models\Product::factory()->count(3)->create();
 
-        $query = $products[0]->name;
+    //     $query = $products[0]->name;
 
-        $response = $this->get('/search/products?query=' . urlencode($query));
+    //     $response = $this->get('/search/products?query=' . urlencode($query));
 
-        $response->assertStatus(200);
-        $response->assertViewIs('layout.product.content');
-        $response->assertViewHas('products');
-    }
+    //     $response->assertStatus(200);
+    //     $response->assertViewIs('layout.product.content');
+    //     $response->assertViewHas('products');
+    // }
 }

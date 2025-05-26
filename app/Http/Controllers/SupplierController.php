@@ -65,12 +65,20 @@ class SupplierController extends Controller
 
     public function search(Request $request)
     {
-        $query = $request->get('query');
-        $suppliers = Supplier::where('name', 'LIKE', "%{$query}%")
-            ->orWhere('email', 'LIKE', "%{$query}%")
-            ->paginate(10);
-        return view('layout.supplier.content', compact('suppliers'));
+        $query = $request->input('query');
+
+        $suppliers = Supplier::where(function ($q) use ($query) {
+            $q->where('name', 'like', '%' . $query . '%')
+                ->orWhere('phone', 'like', '%' . $query . '%');
+        })
+            ->paginate(10)
+            ->appends(['query' => $query]); // giữ tham số tìm kiếm khi phân trang
+
+        return view('layout.supplier.content', compact('suppliers', 'query'));
     }
+
+
+
 
     public function getAllSuppliers()
     {

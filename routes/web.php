@@ -62,6 +62,7 @@ Route::middleware(['auth:account'])->group(function () {
     Route::get('/imports/{id}', [ImportController::class, 'getDetail']);
 
     // category routes
+    Route::get('/search/categories', [CategoryController::class, 'search']);
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories/create', [CategoryController::class, 'store'])->name('categories.store');
     Route::put('/categories/update/{category_id}', [CategoryController::class, 'update']);

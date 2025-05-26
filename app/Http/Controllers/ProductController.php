@@ -8,6 +8,7 @@ use App\Http\DTOs\Requests\ProductCreateData;
 use App\Http\Requests\ProductRequest;
 use App\Http\Requests\SearchRequest;
 use App\Http\Services\CategoryService;
+
 class ProductController extends Controller
 {
     protected ProductService $productService;
@@ -56,8 +57,10 @@ class ProductController extends Controller
 
         // Xử lý lưu ảnh nếu có
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images', 'public'); // Lưu vào storage/app/public/images
-            $validatedData['image'] = 'storage/' . $imagePath; // Lưu đường dẫn để sử dụng khi hiển thị
+            $file = $request->file('image');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('storage/images'), $fileName); // Lưu vào public/storage/images
+            $validatedData['image'] = 'storage/images/' . $fileName; // Lưu đường dẫn để hiển thị
         } else {
             $validatedData['image'] = null;
         }
@@ -68,7 +71,7 @@ class ProductController extends Controller
         // Gọi service
         $product = $this->productService->create($productDTO);
 
-        
+
         return redirect()->back()->with('success', 'Thêm sản phẩm thành công!');
     }
 
@@ -80,24 +83,23 @@ class ProductController extends Controller
     {
         // Lấy dữ liệu đã được xác thực từ request
         $validatedData = $request->validated();
+
         // Xử lý lưu ảnh nếu có
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images', 'public'); // Lưu vào storage/app/public/images
-            $validatedData['image'] = 'storage/' . $imagePath; // Lưu đường dẫn để sử dụng khi hiển thị
+            $file = $request->file('image');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('storage/images'), $fileName); // Lưu vào public/storage/images
+            $validatedData['image'] = 'storage/images/' . $fileName; // Đường dẫn dùng khi hiển thị
         } else {
             $validatedData['image'] = $request->input('old_image');
         }
 
-
+        // Tạo DTO
         $productDTO = ProductCreateData::fromArray($validatedData);
-
-
-
 
         // Gửi DTO vào service để xử lý cập nhật sản phẩm
         $product = $this->productService->update($id, $productDTO);
 
-     
         return redirect()->back()->with('success', 'Cập nhật sản phẩm thành công!');
     }
 

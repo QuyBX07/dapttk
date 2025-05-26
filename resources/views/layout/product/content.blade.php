@@ -42,7 +42,7 @@
                                             <th>Description</th>
                                             <th>Unit</th>
                                             <th>Quantity</th>
-                                            <th>Price</th>
+                                            <th>Price Sale</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -95,7 +95,7 @@
                                                 </form>
                                             </td>
                                         </tr>
-                                        
+                    
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -157,7 +157,7 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="modalPrice">Price</label>
+                                        <label for="modalPrice">Price Sale</label>
                                         <input type="number" step="0.01" name="price" id="modalPrice"
                                             class="form-control" required>
                                     </div>
