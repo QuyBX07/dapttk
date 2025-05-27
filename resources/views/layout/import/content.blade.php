@@ -45,6 +45,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @if($imports && count($imports) > 0)
                                         @foreach ($imports as $import)
                                             <tr class="import-row" data-id="{{ $import['import_id'] }}">
                                                 <td style="max-width: 20%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;"
@@ -81,14 +82,18 @@
 
                                             </tr>
                                         @endforeach
+                                        @else
+    <tr><td colspan="5">Không tìm thấy kết quả.</td></tr>
+@endif
                                     </tbody>
                                 </table>
-
+                                @if($imports && count($imports) > 0)
                                 <div class="card-footer clearfix">
                                     <div class="float-right">
                                         {{ $imports->links() }}
                                     </div>
                                 </div>
+                                @endif
                             </div>
 
                         </div>

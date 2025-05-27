@@ -11,7 +11,7 @@
                             <h3 class="card-title">Accounts</h3>
 
                             <div class="card-tools">
-                                <form action="{{ url('/search/categories') }}" method="GET">
+                                <form action="{{ url('/search/accounts') }}" method="GET">
                                     <div class="input-group input-group-sm" style="width: 150px;">
                                         <input type="text" name="query" class="form-control float-right"
                                             placeholder="Search" value="{{ request('query') }}">

@@ -60,6 +60,7 @@ Route::middleware(['auth:account'])->group(function () {
     Route::get('/imports/onlydelete', [ImportController::class, 'getDeleted']);
     Route::delete('/imports/delete/{id}', [ImportController::class, 'delete']);
     Route::get('/imports/{id}', [ImportController::class, 'getDetail']);
+    Route::get('/search/imports', [ImportController::class, 'search']);
 
     // category routes
     Route::get('/search/categories', [CategoryController::class, 'search']);
@@ -96,6 +97,7 @@ Route::middleware(['auth:account'])->group(function () {
     Route::get('/revenue-by-category', [StatisticsController::class, 'revenueByCategory']);
 
     // Account routes
+    Route::get('/search/accounts', [AccountController::class, 'search']);
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::get('/accounts/search', [AccountController::class, 'search'])->name('accounts.search');
     Route::post('/accounts/create', [AccountController::class, 'store'])->name('accounts.store');

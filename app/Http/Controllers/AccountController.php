@@ -51,4 +51,14 @@ class AccountController extends Controller
 
         return redirect()->route('accounts.index')->with('error', 'Không tìm thấy nhân viên cần xóa.');
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $accounts = $this->accountService->search($query);
+
+        return view('layout.account.content', [
+            'accounts' => $accounts
+        ]);
+    }
 }

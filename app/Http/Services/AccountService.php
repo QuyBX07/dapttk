@@ -62,4 +62,9 @@ class AccountService
     {
         return $this->accountRepository->delete($id);
     }
+
+    public function search(string $query)
+    {
+        return $this->accountRepository->search($query);
+    }
 }

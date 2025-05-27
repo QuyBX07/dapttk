@@ -82,4 +82,8 @@ class ImportService
             'data' => $data,
         ];
     }
+    public function search($query)
+    {
+        return $this->importRepo->search($query);
+    }
 }

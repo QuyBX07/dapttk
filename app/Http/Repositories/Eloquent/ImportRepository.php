@@ -20,7 +20,7 @@ class ImportRepository implements ImportRepoInterface
             ->with('supplier:supplier_id,name')
             ->orWhere('is_delete', 0)
             ->orderBy('updated_at', 'desc')
-            ->paginate(2);;
+            ->paginate(10);;
     }
 
     public function find(string $id)
@@ -86,7 +86,21 @@ class ImportRepository implements ImportRepoInterface
 
 
 
-    public function search(string $query) {}
+    public function search(string $query)
+    {
+        return Import::with('account', 'supplier') // bỏ :id,name đi
+            ->where(function ($q) use ($query) {
+                $q->where('import_id', 'like', '%' . $query . '%')
+                    ->orWhereHas('supplier', function ($q) use ($query) {
+                        $q->where('name', 'like', '%' . $query . '%');
+                    })
+                    ->orWhereHas('account', function ($q) use ($query) {
+                        $q->where('name', 'like', '%' . $query . '%');
+                    });
+            })
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+    }
 
     public function getDeleted()
     {
@@ -94,7 +108,7 @@ class ImportRepository implements ImportRepoInterface
             ->with('supplier:supplier_id,name')
             ->where('is_delete', 1)
             ->orderBy('updated_at', 'desc')
-            ->paginate(2);
+            ->paginate(10);
     }
 
 

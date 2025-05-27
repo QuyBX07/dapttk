@@ -18,17 +18,17 @@ class ImportController extends Controller
     public function __construct(ImportService $importService, ProductService $productService)
     {
         $this->productService = $productService;
-    
+
         $this->importService = $importService;
     }
 
-// get all
+    // get all
     public function getAll()
     {
         $imports = $this->importService->getAll();
         $products = $this->productService->getAll();
 
-        $suppliers= Supplier::select('supplier_id', 'name')->get();
+        $suppliers = Supplier::select('supplier_id', 'name')->get();
 
         // $importData = $imports->response()->getData(true);
 
@@ -37,13 +37,13 @@ class ImportController extends Controller
         //     'imports' => $importData['data'],
         //     'meta' => $importData['meta'],
         //     'links' => $importData['links'],
-           
+
         // ]);
         // return view('layout.import.content', [
         //     'imports' => $imports,
         //     'products' => $products
         // ]);
-        
+
         return view('layout.import.content', [
             'imports' => $imports,
             'products' => $products,
@@ -52,7 +52,7 @@ class ImportController extends Controller
         // return $suppliers;
     }
 
-// get detail
+    // get detail
     public function getDetail(string $id)
     {
         $import = $this->importService->getDetail($id);
@@ -60,7 +60,7 @@ class ImportController extends Controller
         return $import;
     }
 
-//create
+    //create
     public function create(ImportRequest $request)
     {
 
@@ -76,7 +76,7 @@ class ImportController extends Controller
         return redirect()->back()->with('success', 'Thêm phiếu nhập thành công.');
     }
 
-// delete
+    // delete
     public function delete(string $id)
     {
         $deleted = $this->importService->delete($id);
@@ -96,7 +96,7 @@ class ImportController extends Controller
         $products = $this->productService->getAll();
         return $imports;
     }
-    
+
     // get deleted
     public function getDeleted()
     {
@@ -107,31 +107,42 @@ class ImportController extends Controller
     }
 
     // get total import cost by year
- 
 
-public function getTotalImportCostByYear(Request $request)
-{
-    $year = $request->input('year', now()->year); // Lấy năm từ query hoặc mặc định là năm hiện tại
-    $totalImportCost = $this->importService->getTotalImportCostByYear($year);
 
-    return response()->json([
-        'total_import_cost' => $totalImportCost,
-        'year' => $year,
-    ]);
-}
+    public function getTotalImportCostByYear(Request $request)
+    {
+        $year = $request->input('year', now()->year); // Lấy năm từ query hoặc mặc định là năm hiện tại
+        $totalImportCost = $this->importService->getTotalImportCostByYear($year);
 
-public function getTotalImportByMonth(Request $request)
-{
-    $year = $request->input('year', now()->year);   // Lấy năm nếu có hoặc mặc định là năm hiện tại
-    $month = $request->input('month', now()->month); // Lấy tháng nếu có hoặc mặc định là tháng hiện tại
+        return response()->json([
+            'total_import_cost' => $totalImportCost,
+            'year' => $year,
+        ]);
+    }
 
-    $totalImport = $this->importService->getTotalImportByMonth($year, $month);
+    public function getTotalImportByMonth(Request $request)
+    {
+        $year = $request->input('year', now()->year);   // Lấy năm nếu có hoặc mặc định là năm hiện tại
+        $month = $request->input('month', now()->month); // Lấy tháng nếu có hoặc mặc định là tháng hiện tại
 
-    return response()->json([
-        'total_import' => $totalImport,
-        'year' => $year,
-        'month' => $month,
-    ]);
-}
+        $totalImport = $this->importService->getTotalImportByMonth($year, $month);
 
+        return response()->json([
+            'total_import' => $totalImport,
+            'year' => $year,
+            'month' => $month,
+        ]);
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $imports = $this->importService->search($query);
+
+        return view('layout.import.content', [
+            'imports' => $imports,
+            'products' => $this->productService->getAll(),
+            'suppliers' => Supplier::select('supplier_id', 'name')->get()
+        ]);
+    }
 }

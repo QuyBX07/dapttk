@@ -11,4 +11,5 @@ interface AccountRepositoryInterface
     public function find($id);
     public function update($id, array $data);
     public function delete(string $id): bool;
+    public function search(string $query);
 }

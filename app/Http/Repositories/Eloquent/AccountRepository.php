@@ -44,4 +44,13 @@ class AccountRepository implements AccountRepositoryInterface
 
         return $account->delete();
     }
+
+    public function search(string $query)
+    {
+        return Account::where('name', 'like', '%' . $query . '%')
+            ->orWhere('email', 'like', '%' . $query . '%')
+            ->orWhere('phone', 'like', '%' . $query . '%')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+    }
 }

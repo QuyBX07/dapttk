@@ -116,9 +116,11 @@ class ProductController extends Controller
     {
         $query = $request->input('query');
         $products = $this->productService->search($query);
+        $categorys = $this->categoryService->getAll();
 
         return view('layout.product.content', [
-            'products' => $products
+            'products' => $products,
+            'categorys' => $categorys,
         ]);
     }
 }
